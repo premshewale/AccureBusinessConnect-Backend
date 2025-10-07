@@ -1,13 +1,13 @@
 package com.accuresoftech.abc.services;
 
+import com.accuresoftech.abc.dto.response.DepartmentResponse;
 import com.accuresoftech.abc.entity.auth.Department;
-
 import java.util.List;
 
 public interface DepartmentService {
-    Department create(Department d);
-    Department update(Long id, Department d);
-    Department getById(Long id);
-    List<Department> getAll();
+    DepartmentResponse create(Department d);
+    DepartmentResponse update(Long id, Department d);
+    DepartmentResponse getById(Long id);
+    List<DepartmentResponse> getAll();
     void delete(Long id);
 }

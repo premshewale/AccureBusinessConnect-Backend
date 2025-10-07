@@ -3,9 +3,10 @@ package com.accuresoftech.abc.controller;
 import com.accuresoftech.abc.dto.request.LoginRequest;
 import com.accuresoftech.abc.dto.request.RegisterUserRequest;
 import com.accuresoftech.abc.dto.response.JwtResponse;
+import com.accuresoftech.abc.dto.response.UserResponse;
 import com.accuresoftech.abc.security.CustomUserDetailsService;
 import com.accuresoftech.abc.security.JwtProvider;
-import com.accuresoftech.abc.services.UserService;    
+import com.accuresoftech.abc.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,27 +24,24 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final CustomUserDetailsService userDetailsService;
-    private final UserService userService;   
+    private final UserService userService;
 
-    //  ADMIN REGISTER ENDPOINT
+    // Register Admin
     @PostMapping("/register-admin")
-    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterUserRequest req) {
+    public ResponseEntity<UserResponse> registerAdmin(@Valid @RequestBody RegisterUserRequest req) {
         return ResponseEntity.ok(userService.createAdmin(req));
     }
 
-    //  LOGIN ENDPOINT
+    // Login and get JWT token
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
-
             UserDetails ud = userDetailsService.loadUserByUsername(req.getEmail());
             String token = jwtProvider.generateToken(ud);
-
             return ResponseEntity.ok(new JwtResponse(token));
-
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("{\"error\":\"Invalid email or password\"}");

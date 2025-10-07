@@ -1,10 +1,9 @@
 package com.accuresoftech.abc.services;
 
-import com.accuresoftech.abc.entity.auth.Role;
-
+import com.accuresoftech.abc.dto.response.RoleResponse;
 import java.util.List;
 
 public interface RoleService {
-    List<Role> getAllRoles();
-    Role getByKey(com.accuresoftech.abc.enums.RoleKey key);
+    List<RoleResponse> getAllRoles();
+    RoleResponse getByKey(String key);
 }

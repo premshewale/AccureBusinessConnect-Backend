@@ -1,12 +1,13 @@
 package com.accuresoftech.abc.controller;
 
+import com.accuresoftech.abc.dto.response.DepartmentResponse;
 import com.accuresoftech.abc.entity.auth.Department;
 import com.accuresoftech.abc.services.DepartmentService;
+import com.accuresoftech.abc.utils.EntityMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,22 +18,23 @@ public class DepartmentController {
     private final DepartmentService departmentService;
 
     @PostMapping
-    public ResponseEntity<Department> create(@Valid @RequestBody Department dept) {
+    public ResponseEntity<DepartmentResponse> create(@Valid @RequestBody Department dept) {
         return ResponseEntity.ok(departmentService.create(dept));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Department> update(@PathVariable Long id, @Valid @RequestBody Department dept) {
+    public ResponseEntity<DepartmentResponse> update(@PathVariable Long id,
+                                                     @Valid @RequestBody Department dept) {
         return ResponseEntity.ok(departmentService.update(id, dept));
     }
 
     @GetMapping
-    public ResponseEntity<List<Department>> getAll() {
+    public ResponseEntity<List<DepartmentResponse>> getAll() {
         return ResponseEntity.ok(departmentService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Department> getById(@PathVariable Long id) {
+    public ResponseEntity<DepartmentResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(departmentService.getById(id));
     }
 

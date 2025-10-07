@@ -9,13 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserResponse {
+public class DepartmentResponse {
     private Long id;
     private String name;
-    private String email;
-    private String jobTitle;
-    private String phoneExtension;
-    private String status;
-    private String roleName;
-    private String departmentName;
+    private String managerName;
 }
