@@ -26,13 +26,11 @@ public class AuthController {
     private final CustomUserDetailsService userDetailsService;
     private final UserService userService;
 
-    // Register Admin
     @PostMapping("/register-admin")
     public ResponseEntity<UserResponse> registerAdmin(@Valid @RequestBody RegisterUserRequest req) {
         return ResponseEntity.ok(userService.createAdmin(req));
     }
 
-    // Login and get JWT token
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
         try {

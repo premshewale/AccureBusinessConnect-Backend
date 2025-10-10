@@ -19,7 +19,7 @@ public class DataSeeder {
             roleRepository.findByKey(key).orElseGet(() -> {
                 Role r = Role.builder()
                         .key(key)
-                        .name(key.name().charAt(0) + key.name().substring(1).toLowerCase().replace("_", " "))
+                        .name(key.name().charAt(0) + key.name().substring(1).toLowerCase().replace("_"," "))
                         .build();
                 return roleRepository.save(r);
             });

@@ -3,7 +3,6 @@ package com.accuresoftech.abc.controller;
 import com.accuresoftech.abc.dto.response.DepartmentResponse;
 import com.accuresoftech.abc.entity.auth.Department;
 import com.accuresoftech.abc.services.DepartmentService;
-import com.accuresoftech.abc.utils.EntityMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +22,7 @@ public class DepartmentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> update(@PathVariable Long id,
-                                                     @Valid @RequestBody Department dept) {
+    public ResponseEntity<DepartmentResponse> update(@PathVariable Long id, @Valid @RequestBody Department dept) {
         return ResponseEntity.ok(departmentService.update(id, dept));
     }
 

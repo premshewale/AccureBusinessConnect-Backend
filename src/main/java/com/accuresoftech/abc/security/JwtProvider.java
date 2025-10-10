@@ -2,60 +2,48 @@ package com.accuresoftech.abc.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Component
 public class JwtProvider {
 
-    private static final String SECRET_KEY = "MySuperSecretJwtKeyForABCProject2025!@#AccureCRM";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+    private final SecretKey secretKey;
+    private final long expirationMs;
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+    public JwtProvider(@Value("${jwt.secret}") String secret,
+                       @Value("${jwt.expiration-ms}") long expirationMs) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMs = expirationMs;
     }
 
     public String generateToken(UserDetails userDetails) {
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + expirationMs);
+
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .setIssuedAt(now)
+                .setExpiration(exp)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
+        return Jwts.parserBuilder().setSigningKey(secretKey).build()
+                .parseClaimsJws(token).getBody().getSubject();
     }
 
-    public boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
-    }
-
-    private Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    // ✅ Added this helper for JwtFilter
     public boolean validateToken(String token) {
         try {
-            extractClaims(token);
+            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
-        } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException ex) {
             return false;
         }
-    }
-
-    // Still keep the 2-parameter method for AuthenticationManager usage if needed
-    public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

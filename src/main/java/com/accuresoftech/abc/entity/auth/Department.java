@@ -20,8 +20,8 @@ public class Department extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
-    // manager is optional; FK to users (self-referencing across tables)
-    @ManyToOne(fetch = FetchType.LAZY)
+    // optional manager we will delete it later if not requried 
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manager_id")
     private User manager;
 }

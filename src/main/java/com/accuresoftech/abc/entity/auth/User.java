@@ -5,6 +5,8 @@ import com.accuresoftech.abc.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -36,7 +38,6 @@ public class User extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
-    
     private Role role;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -47,5 +48,5 @@ public class User extends BaseEntity {
     private String profilePicture;
 
     @Column(name = "last_login")
-    private java.time.LocalDateTime lastLogin;
+    private LocalDateTime lastLogin;
 }
