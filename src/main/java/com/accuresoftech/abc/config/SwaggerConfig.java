@@ -9,13 +9,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    @Bean
-    public OpenAPI apiInfo() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Accure Business Connect (ABC) CRM API")
-                        .version("1.0.0")
-                        .description("Backend APIs for ABC CRM - Admin, Auth, Customer, and Lead modules")
-                        .license(new License().name("Apache 2.0")));
-    }
+	@Bean
+	public OpenAPI apiInfo() {
+		return new OpenAPI().info(new Info().title("Accure Business Connect (ABC) CRM API").version("1.0.0")
+				.description("Backend APIs for ABC CRM - Admin, Auth, Customer, and Lead modules")
+				.license(new License().name("Apache 2.0")));
+	}
 }

@@ -16,37 +16,37 @@ import java.time.LocalDateTime;
 @Builder
 public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+	@Column(name = "password_hash", nullable = false)
+	private String passwordHash;
 
-    private String jobTitle;
-    private String phoneExtension;
+	private String jobTitle;
+	private String phoneExtension;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserStatus status = UserStatus.ACTIVE;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private UserStatus status = UserStatus.ACTIVE;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role role;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "role_id", nullable = false)
+	private Role role;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "department_id")
-    private Department department;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "department_id")
+	private Department department;
 
-    @Column(name = "profile_picture")
-    private String profilePicture;
+	@Column(name = "profile_picture")
+	private String profilePicture;
 
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
+	@Column(name = "last_login")
+	private LocalDateTime lastLogin;
 }

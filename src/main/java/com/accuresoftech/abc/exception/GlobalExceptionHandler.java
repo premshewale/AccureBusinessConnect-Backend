@@ -16,45 +16,33 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    protected ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
-        Map<String,Object> body = Map.of(
-                "status", HttpStatus.NOT_FOUND.name(),
-                "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        );
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.NOT_FOUND);
-    }
+	@ExceptionHandler(ResourceNotFoundException.class)
+	protected ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
+		Map<String, Object> body = Map.of("status", HttpStatus.NOT_FOUND.name(), "message", ex.getMessage(),
+				"timestamp", LocalDateTime.now().toString());
+		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.NOT_FOUND);
+	}
 
-    @ExceptionHandler(AccessDeniedException.class)
-    protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
-        Map<String,Object> body = Map.of(
-                "status", HttpStatus.FORBIDDEN.name(),
-                "message", "Access denied",
-                "timestamp", LocalDateTime.now().toString()
-        );
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
-    }
+	@ExceptionHandler(AccessDeniedException.class)
+	protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
+		Map<String, Object> body = Map.of("status", HttpStatus.FORBIDDEN.name(), "message", "Access denied",
+				"timestamp", LocalDateTime.now().toString());
+		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.FORBIDDEN);
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(FieldError::getDefaultMessage).collect(Collectors.joining("; "));
-        Map<String,Object> body = Map.of(
-                "status", HttpStatus.BAD_REQUEST.name(),
-                "message", "Validation failed: " + message,
-                "timestamp", LocalDateTime.now().toString()
-        );
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	protected ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex) {
+		String message = ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage)
+				.collect(Collectors.joining("; "));
+		Map<String, Object> body = Map.of("status", HttpStatus.BAD_REQUEST.name(), "message",
+				"Validation failed: " + message, "timestamp", LocalDateTime.now().toString());
+		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+	}
 
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<Object> handleAll(Exception ex) {
-        Map<String,Object> body = Map.of(
-                "status", HttpStatus.INTERNAL_SERVER_ERROR.name(),
-                "message", ex.getMessage(),
-                "timestamp", LocalDateTime.now().toString()
-        );
-        return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+	@ExceptionHandler(Exception.class)
+	protected ResponseEntity<Object> handleAll(Exception ex) {
+		Map<String, Object> body = Map.of("status", HttpStatus.INTERNAL_SERVER_ERROR.name(), "message", ex.getMessage(),
+				"timestamp", LocalDateTime.now().toString());
+		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

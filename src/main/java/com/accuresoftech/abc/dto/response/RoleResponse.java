@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RoleResponse {
-    private Long id;
-    private String key;
-    private String name;
+	private Long id;
+	private String key;
+	private String name;
 }

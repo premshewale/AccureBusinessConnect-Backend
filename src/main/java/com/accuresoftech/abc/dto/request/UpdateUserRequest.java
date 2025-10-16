@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class UpdateUserRequest {
-    private String name;
-    private String jobTitle;
-    private String phoneExtension;
-    private UserStatus status;
-    private Long departmentId;
+	private String name;
+	private String jobTitle;
+	private String phoneExtension;
+	private UserStatus status;
+	private Long departmentId;
 }

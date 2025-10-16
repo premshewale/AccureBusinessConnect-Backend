@@ -13,15 +13,16 @@ import lombok.*;
 @Builder
 public class Department extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+	@Column(nullable = false, unique = true)
+	private String name;
 
-    // optional manager we will delete it later if not requried 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "manager_id")
-    private User manager;
+	// optional manager - manager must be SUB_ADMIN in business logic (enforced in
+	// service)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "manager_id")
+	private User manager;
 }

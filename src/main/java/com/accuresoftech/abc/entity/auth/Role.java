@@ -14,14 +14,14 @@ import lombok.*;
 @Builder
 public class Role extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role_key", nullable = false, unique = true)
-    private RoleKey key;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "role_key", nullable = false, unique = true)
+	private RoleKey key;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+	@Column(name = "name", nullable = false)
+	private String name;
 }

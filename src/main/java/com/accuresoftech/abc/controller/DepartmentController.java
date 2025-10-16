@@ -14,31 +14,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DepartmentController {
 
-    private final DepartmentService departmentService;
+	private final DepartmentService departmentService;
 
-    @PostMapping
-    public ResponseEntity<DepartmentResponse> create(@Valid @RequestBody Department dept) {
-        return ResponseEntity.ok(departmentService.create(dept));
-    }
+	@PostMapping
+	public ResponseEntity<DepartmentResponse> create(@Valid @RequestBody Department dept) {
+		return ResponseEntity.ok(departmentService.create(dept));
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> update(@PathVariable Long id, @Valid @RequestBody Department dept) {
-        return ResponseEntity.ok(departmentService.update(id, dept));
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<DepartmentResponse> update(@PathVariable Long id, @Valid @RequestBody Department dept) {
+		return ResponseEntity.ok(departmentService.update(id, dept));
+	}
 
-    @GetMapping
-    public ResponseEntity<List<DepartmentResponse>> getAll() {
-        return ResponseEntity.ok(departmentService.getAll());
-    }
+	@GetMapping
+	public ResponseEntity<List<DepartmentResponse>> getAll() {
+		return ResponseEntity.ok(departmentService.getAll());
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DepartmentResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(departmentService.getById(id));
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<DepartmentResponse> getById(@PathVariable Long id) {
+		return ResponseEntity.ok(departmentService.getById(id));
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        departmentService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		departmentService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 }

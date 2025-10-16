@@ -12,15 +12,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController {
 
-    private final RoleService roleService;
+	private final RoleService roleService;
 
-    @GetMapping
-    public ResponseEntity<List<RoleResponse>> getAll() {
-        return ResponseEntity.ok(roleService.getAllRoles());
-    }
+	@GetMapping
+	public ResponseEntity<List<RoleResponse>> getAll() {
+		return ResponseEntity.ok(roleService.getAllRoles());
+	}
 
-    @GetMapping("/{key}")
-    public ResponseEntity<RoleResponse> getByKey(@PathVariable String key) {
-        return ResponseEntity.ok(roleService.getByKey(key));
-    }
+	@GetMapping("/{key}")
+	public ResponseEntity<RoleResponse> getByKey(@PathVariable String key) {
+		return ResponseEntity.ok(roleService.getByKey(key));
+	}
 }

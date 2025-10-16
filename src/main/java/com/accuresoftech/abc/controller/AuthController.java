@@ -21,34 +21,33 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
-    private final CustomUserDetailsService userDetailsService;
-    private final UserService userService;
+	private final AuthenticationManager authenticationManager;
+	private final JwtProvider jwtProvider;
+	private final CustomUserDetailsService userDetailsService;
+	private final UserService userService;
 
-    @PostMapping("/register-admin")
-    public ResponseEntity<UserResponse> registerAdmin(@Valid @RequestBody RegisterUserRequest req) {
-        return ResponseEntity.ok(userService.createAdmin(req));
-    }
+	@PostMapping("/register-admin")
+	public ResponseEntity<UserResponse> registerAdmin(@Valid @RequestBody RegisterUserRequest req) {
+		return ResponseEntity.ok(userService.createAdmin(req));
+	}
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
-            );
-            UserDetails ud = userDetailsService.loadUserByUsername(req.getEmail());
-            String token = jwtProvider.generateToken(ud);
-            return ResponseEntity.ok(new JwtResponse(token));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("{\"error\":\"Invalid email or password\"}");
-        } catch (DisabledException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\":\"User account is disabled\"}");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("{\"error\":\"Login failed. Please try again later.\"}");
-        }
-    }
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest req) {
+		try {
+			Authentication auth = authenticationManager
+					.authenticate(new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+
+			UserDetails ud = userDetailsService.loadUserByUsername(req.getEmail());
+			String token = jwtProvider.generateToken(ud);
+
+			return ResponseEntity.ok(new JwtResponse(token));
+		} catch (BadCredentialsException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\":\"Invalid email or password\"}");
+		} catch (DisabledException e) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{\"error\":\"User account is disabled\"}");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("{\"error\":\"Login failed. Please try again later.\"}");
+		}
+	}
 }

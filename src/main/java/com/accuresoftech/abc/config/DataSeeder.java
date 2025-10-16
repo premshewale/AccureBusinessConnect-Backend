@@ -11,18 +11,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataSeeder {
 
-    private final RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-    @PostConstruct
-    public void init() {
-        for (RoleKey key : RoleKey.values()) {
-            roleRepository.findByKey(key).orElseGet(() -> {
-                Role r = Role.builder()
-                        .key(key)
-                        .name(key.name().charAt(0) + key.name().substring(1).toLowerCase().replace("_"," "))
-                        .build();
-                return roleRepository.save(r);
-            });
-        }
-    }
+	@PostConstruct
+	public void init() {
+		for (RoleKey key : RoleKey.values()) {
+			roleRepository.findByKey(key).orElseGet(() -> {
+				Role r = Role.builder().key(key)
+						.name(key.name().charAt(0) + key.name().substring(1).toLowerCase().replace("_", " ")).build();
+				return roleRepository.save(r);
+			});
+		}
+	}
 }
