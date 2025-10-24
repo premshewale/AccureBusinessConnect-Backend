@@ -16,12 +16,21 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+<<<<<<< HEAD
 	@ExceptionHandler(ResourceNotFoundException.class)
 	protected ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
 		Map<String, Object> body = Map.of("status", HttpStatus.NOT_FOUND.name(), "message", ex.getMessage(),
 				"timestamp", LocalDateTime.now().toString());
 		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.NOT_FOUND);
 	}
+=======
+    @ExceptionHandler(ResourceNotFoundException.class)
+    protected ResponseEntity<Object> handleNotFound(ResourceNotFoundException ex) {
+        apiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        apiError.setMessage(ex.getMessage());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+>>>>>>> 41782711a42869a580822a49c4dbee594b1b2aee
 
 	@ExceptionHandler(AccessDeniedException.class)
 	protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
