@@ -5,10 +5,11 @@ import com.accuresoftech.abc.dto.request.UpdateUserRequest;
 import com.accuresoftech.abc.dto.response.UserResponse;
 import com.accuresoftech.abc.dto.response.ApiResponse;
 import com.accuresoftech.abc.services.UserService;
+import com.accuresoftech.abc.utils.AuthUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserController {
 
 	private final UserService userService;
+	private final AuthUtils authUtils;
 
 	// Create user (Admin or SubAdmin)
 	@PostMapping
@@ -61,9 +63,11 @@ public class UserController {
 	// Profile
 	@GetMapping("/me")
 	public ResponseEntity<UserResponse> me() {
-		// simpler path: service.getMyProfile can be used with SauthUtils but here we
-		// reuse getAll to return first as earlier
-		List<UserResponse> list = userService.getAll();
-		return ResponseEntity.ok(list.get(0));
+		var current = authUtils.getCurrentUser();
+		if (current == null) {
+			throw new AccessDeniedException("Unauthorized");
+		}
+		UserResponse profile = userService.getMyProfile(current.getEmail());
+		return ResponseEntity.ok(profile);
 	}
 }
