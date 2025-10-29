@@ -51,9 +51,11 @@ public class UserController {
 	@PutMapping("/{id}/deactivate")
 	public ResponseEntity<UserResponse> deactivateUser(@PathVariable Long id) {
 		UserResponse res = userService.deactivateUser(id);
+		
 		return ResponseEntity.ok(res);
 	}
 
+	
 	@PutMapping("/{id}/activate")
 	public ResponseEntity<UserResponse> activateUser(@PathVariable Long id) {
 		UserResponse res = userService.activateUser(id);
