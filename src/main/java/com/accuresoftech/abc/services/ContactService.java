@@ -1,15 +1,14 @@
-/*package com.accuresoftech.abc.services;
+package com.accuresoftech.abc.services;
 
+import com.accuresoftech.abc.dto.request.ContactRequest;
+import com.accuresoftech.abc.dto.response.ContactResponse;
 import java.util.List;
 
-import com.accuresoftech.abc.dto.request.CustomerRequest.ContactRequest;
-import com.accuresoftech.abc.dto.response.CustomerResponse.ContactResponse;
-
-public interface ContactService {
-
-	ContactResponse createContact(ContactRequest request);
+public interface ContactService 
+{
+    ContactResponse createContact(Long customerId, ContactRequest request);
+    List<ContactResponse> getContactsByCustomer(Long customerId);
     ContactResponse updateContact(Long id, ContactRequest request);
     void deleteContact(Long id);
-    ContactResponse getContactById(Long id);
-    List<ContactResponse> getContactsByCustomerId(Long customerId);
-}*/
+    
+}

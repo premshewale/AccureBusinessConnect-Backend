@@ -74,7 +74,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserResponse createAdmin(RegisterUserRequest req) {
+	public UserResponse createAdmin(RegisterUserRequest req) 
+	{
 		// register-admin endpoint (public) — creates ADMIN user
 		Role role = roleRepository.findByKey(RoleKey.ADMIN)
 				.orElseThrow(() -> new ResourceNotFoundException("Admin role not found"));
@@ -86,6 +87,8 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(u);
 		return EntityMapper.toUserResponse(u);
 	}
+	
+	
 
 	@Override
 	public UserResponse update(Long id, UpdateUserRequest req) {

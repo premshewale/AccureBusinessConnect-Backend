@@ -3,39 +3,54 @@ package com.accuresoftech.abc.controller;
 import com.accuresoftech.abc.dto.request.CustomerRequest;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.services.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/customers")
 public class CustomerController {
 
-    @Autowired
-    private CustomerService customerService;
+    private final CustomerService customerService;
 
     @PostMapping
-    public CustomerResponse createCustomer(@RequestBody CustomerRequest request) {
-        return customerService.createCustomer(request);
+    public ResponseEntity<CustomerResponse> create(@RequestBody CustomerRequest request) {
+        CustomerResponse response = customerService.createCustomer(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 Created
     }
 
     @GetMapping
-    public List<CustomerResponse> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<Page<CustomerResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search) {
+
+        Page<CustomerResponse> response =
+                customerService.getAll(PageRequest.of(page, size), search);
+        return ResponseEntity.ok(response); // ✅ 200 OK
     }
 
     @GetMapping("/{id}")
-    public CustomerResponse getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
+    public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.getCustomerById(id)); // ✅ 200 OK
     }
 
     @PutMapping("/{id}")
-    public CustomerResponse updateCustomer(@PathVariable Long id, @RequestBody CustomerRequest request) {
-        return customerService.updateCustomer(id, request);
+    public ResponseEntity<CustomerResponse> update(
+            @PathVariable Long id,
+            @RequestBody CustomerRequest request) {
+
+        return ResponseEntity.ok(customerService.updateCustomer(id, request)); // ✅ 200 OK
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build(); // ✅ 204 No Content
     }
 }

@@ -1,311 +1,3 @@
-/*package com.accuresoftech.abc.servicesimpl;
-
-import com.accuresoftech.abc.dto.request.CustomerRequest;
-import com.accuresoftech.abc.dto.response.CustomerResponse;
-import com.accuresoftech.abc.entity.auth.Contact;
-import com.accuresoftech.abc.entity.auth.Customer;
-import com.accuresoftech.abc.entity.auth.User;
-import com.accuresoftech.abc.repository.CustomerRepository;
-import com.accuresoftech.abc.repository.ContactRepository;
-import com.accuresoftech.abc.services.CustomerService;
-import com.accuresoftech.abc.utils.AuthUtils;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.nio.file.AccessDeniedException;
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Service
-public class CustomerServiceImpl implements CustomerService {
-
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private ContactRepository contactRepository;
-    
-    @Autowired
-    private AuthUtils authUtils;
-
-    @Override
-    public CustomerResponse createCustomer(CustomerRequest request) {
-    	
-    	 User currentUser = authUtils.getCurrentUser();
-         if (currentUser == null) {
-             throw new org.springframework.security.access.AccessDeniedException("Unauthorized");
-         }
-        Customer customer = new Customer();
-        customer.setName(request.getName());
-        customer.setEmail(request.getEmail());
-        customer.setPhone(request.getPhone());
-        customer.setAddress(request.getAddress());
-        customer.setIndustry(request.getIndustry());
-        customer.setType(request.getType());
-        customer.setStatus(request.getStatus());
-        customer.setWebsite(request.getWebsite());
-        customer.setContactPersonCount(request.getContactPersonCount());
-        
-        
-         // Assign logged-in user as owner
-        customer.setOwner(currentUser);
-        
-         // Optional: Assign department same as staff
-        customer.setDepartment(currentUser.getDepartment());
-
-        
-        
-        
-        
-
-        // Save Customer first
-        Customer savedCustomer = customerRepository.save(customer);
-
-        // Map contacts
-        if (request.getContacts() != null) {
-            List<Contact> contacts = request.getContacts().stream().map(c -> {
-                Contact contact = new Contact();
-                contact.setCustomer(savedCustomer);
-
-                contact.setFirstName(c.getFirstName());
-                contact.setLastName(c.getLastName());
-                contact.setEmail(c.getEmail());
-                contact.setPhone(c.getPhone());
-                contact.setRole(Contact.Role.valueOf(c.getRole()));
-                contact.setPrimary(c.isPrimary());
-                return contact;
-            }).collect(Collectors.toList());
-
-            contactRepository.saveAll(contacts);
-            savedCustomer.setContacts(contacts);
-        }
-
-        return toResponse(savedCustomer);
-    }
-
-    @Override
-    public List<CustomerResponse> getAllCustomers() {
-        return customerRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
-    }
-
-    @Override
-    public CustomerResponse getCustomerById(Long id) {
-        return customerRepository.findById(id).map(this::toResponse).orElseThrow(() -> new RuntimeException("Customer not found"));
-    }
-
-    @Override
-    public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-        customer.setName(request.getName());
-        customer.setEmail(request.getEmail());
-        customer.setPhone(request.getPhone());
-        customer.setAddress(request.getAddress());
-        customer.setIndustry(request.getIndustry());
-        customer.setType(request.getType());
-        customer.setStatus(request.getStatus());
-        customer.setWebsite(request.getWebsite());
-        customer.setContactPersonCount(request.getContactPersonCount());
-
-        Customer updated = customerRepository.save(customer);
-        return toResponse(updated);
-    }
-
-    @Override
-    public void deleteCustomer(Long id) {
-        customerRepository.deleteById(id);
-    }
-
-    private CustomerResponse toResponse(Customer customer) {
-        CustomerResponse response = new CustomerResponse();
-        response.setId(customer.getId());
-        response.setName(customer.getName());
-        response.setEmail(customer.getEmail());
-        response.setPhone(customer.getPhone());
-        response.setAddress(customer.getAddress());
-        response.setIndustry(customer.getIndustry());
-        response.setType(customer.getType().name());
-        response.setStatus(customer.getStatus().name());
-        response.setWebsite(customer.getWebsite());
-        response.setContactPersonCount(customer.getContactPersonCount());
-
-        if (customer.getContacts() != null) {
-            response.setContacts(customer.getContacts().stream().map(contact -> {
-                CustomerResponse.ContactResponse cRes = new CustomerResponse.ContactResponse();
-                cRes.setId(contact.getId());
-                cRes.setFirstName(contact.getFirstName());
-                cRes.setLastName(contact.getLastName());
-                cRes.setEmail(contact.getEmail());
-                cRes.setPhone(contact.getPhone());
-                cRes.setRole(contact.getRole().name());
-                cRes.setPrimary(contact.isPrimary());
-                return cRes;
-            }).collect(Collectors.toList()));
-        }
-
-        return response;
-    }
-}
-
-
-
-
-
-package com.accuresoftech.abc.servicesimpl;
-
-//import com.accuresoftech.abc.dto.request.ContactRequest;
-import com.accuresoftech.abc.dto.request.CustomerRequest;
-//import com.accuresoftech.abc.dto.response.ContactResponse;
-import com.accuresoftech.abc.dto.response.CustomerResponse;
-import com.accuresoftech.abc.entity.auth.Contact;
-import com.accuresoftech.abc.entity.auth.Customer;
-import com.accuresoftech.abc.entity.auth.User;
-import com.accuresoftech.abc.exception.ResourceNotFoundException;
-import com.accuresoftech.abc.repository.ContactRepository;
-import com.accuresoftech.abc.repository.CustomerRepository;
-import com.accuresoftech.abc.services.CustomerService;
-import com.accuresoftech.abc.utils.AuthUtils;
-
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-@Service
-@RequiredArgsConstructor
-public class CustomerServiceImpl implements CustomerService {
-	@Autowired
-    private CustomerRepository customerRepository;
-	@Autowired
-    private ContactRepository contactRepository;
-	@Autowired
-    private AuthUtils authUtils;
-
-    @Override
-    public CustomerResponse create(CustomerRequest request) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
-        }
-
-        Customer customer = Customer.builder()
-                .name(request.getName())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .address(request.getAddress())
-                .industry(request.getIndustry())
-                .type(request.getType())
-                .status(request.getStatus())
-                .website(request.getWebsite())
-                .owner(currentUser)
-                .department(currentUser.getDepartment())
-                .build();
-
-        Customer savedCustomer = customerRepository.save(customer);
-
-        if (request.getContacts() != null) {
-            List<Contact> contacts = request.getContacts().stream().map(c -> {
-                Contact contact = new Contact();
-                contact.setCustomer(savedCustomer);
-                contact.setFirstName(c.getFirstName());
-                contact.setLastName(c.getLastName());
-                contact.setEmail(c.getEmail());
-                contact.setPhone(c.getPhone());
-                contact.setRole(Contact.Role.valueOf(c.getRole().toUpperCase()));
-                contact.setPrimary(c.isPrimary());
-                return contact;
-            }).collect(Collectors.toList());
-            contactRepository.saveAll(contacts);
-            savedCustomer.setContacts(contacts);
-        }
-
-        return toResponse(savedCustomer);
-    }
-
-    @Override
-    public List<CustomerResponse> getAll() {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) throw new AccessDeniedException("Unauthorized");
-
-        List<Customer> customers;
-        if (currentUser.getRole().getKey().name().equals("ADMIN")) {
-            customers = customerRepository.findAll();
-        } else {
-            customers = customerRepository.findByOwnerId(currentUser.getId());
-        }
-
-        return customers.stream().map(this::toResponse).collect(Collectors.toList());
-    }
-
-    @Override
-    public CustomerResponse getById(Long id) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) throw new AccessDeniedException("Unauthorized");
-
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
-
-        if (!currentUser.getRole().getKey().name().equals("ADMIN") &&
-                !customer.getOwner().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Access denied");
-        }
-
-        return toResponse(customer);
-    }
-
-    private CustomerResponse toResponse(Customer c) {
-        CustomerResponse res = new CustomerResponse();
-        res.setId(c.getId());
-        res.setName(c.getName());
-        res.setEmail(c.getEmail());
-        res.setPhone(c.getPhone());
-        res.setAddress(c.getAddress());
-        res.setIndustry(c.getIndustry());
-        res.setType(c.getType());
-        res.setStatus(c.getStatus());
-        res.setWebsite(c.getWebsite());
-        res.setOwnerName(c.getOwner() != null ? c.getOwner().getName() : null);
-        res.setDepartmentName(c.getDepartment() != null ? c.getDepartment().getName() : null);
-
-        if (c.getContacts() != null) {
-            List<ContactResponse> contacts = c.getContacts().stream().map(contact -> {
-                ContactResponse cr = new ContactResponse();
-                cr.setId(contact.getId());
-                cr.setFirstName(contact.getFirstName());
-                cr.setLastName(contact.getLastName());
-                cr.setEmail(contact.getEmail());
-                cr.setPhone(contact.getPhone());
-                cr.setRole(contact.getRole().name());
-                cr.setPrimary(contact.isPrimary());
-                return cr;
-            }).collect(Collectors.toList());
-            res.setContacts(contacts);
-        }
-
-        return res;
-    }
-}*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 package com.accuresoftech.abc.servicesimpl;
 
 import com.accuresoftech.abc.dto.request.CustomerRequest;
@@ -313,14 +5,17 @@ import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.entity.auth.Contact;
 import com.accuresoftech.abc.entity.auth.Customer;
 import com.accuresoftech.abc.entity.auth.User;
+import com.accuresoftech.abc.enums.CustomerStatus;
+import com.accuresoftech.abc.enums.CustomerType;
 import com.accuresoftech.abc.enums.RoleKey;
 import com.accuresoftech.abc.exception.ResourceNotFoundException;
 import com.accuresoftech.abc.repository.ContactRepository;
 import com.accuresoftech.abc.repository.CustomerRepository;
 import com.accuresoftech.abc.services.CustomerService;
 import com.accuresoftech.abc.utils.AuthUtils;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -335,184 +30,161 @@ public class CustomerServiceImpl implements CustomerService {
     private final ContactRepository contactRepository;
     private final AuthUtils authUtils;
 
-    @Override
-    public CustomerResponse createCustomer(CustomerRequest request) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
-        }
+    private User getCurrentUser() {
+        return authUtils.getCurrentUser();
+    }
 
-        Customer customer = new Customer();
-        customer.setName(request.getName());
-        customer.setEmail(request.getEmail());
-        customer.setPhone(request.getPhone());
-        customer.setAddress(request.getAddress());
-        customer.setIndustry(request.getIndustry());
-        customer.setType(request.getType());
-        customer.setStatus(request.getStatus());
-        customer.setWebsite(request.getWebsite());
-
-        // Assign owner & department
-        customer.setOwner(currentUser);
-        customer.setDepartment(currentUser.getDepartment());
-
-        Customer savedCustomer = customerRepository.save(customer);
-
-        // Map contacts
-        if (request.getContacts() != null) {
-            List<Contact> contacts = request.getContacts().stream().map(c -> {
-                Contact contact = new Contact();
-                contact.setCustomer(savedCustomer);
-                contact.setFirstName(c.getFirstName());
-                contact.setLastName(c.getLastName());
-                contact.setEmail(c.getEmail());
-                contact.setPhone(c.getPhone());
-                contact.setRole(Contact.Role.valueOf(c.getRole().toUpperCase()));
-                contact.setPrimary(c.isPrimary());
-                return contact;
-            }).collect(Collectors.toList());
-            contactRepository.saveAll(contacts);
-            savedCustomer.setContacts(contacts);
-        }
-
-        return toResponse(savedCustomer);
+    private boolean canAccessCustomer(Customer c, User u) {
+        if (u.getRole().getKey() == RoleKey.ADMIN) return true;
+        if (u.getRole().getKey() == RoleKey.SUB_ADMIN)
+            return c.getDepartment().getId().equals(u.getDepartment().getId());
+        return c.getAssignedUser().getId().equals(u.getId());
     }
 
     @Override
-    public List<CustomerResponse> getAllCustomers() {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
+    public CustomerResponse createCustomer(CustomerRequest request) {
+        User currentUser = getCurrentUser();
+
+        // 🔹 C: Prevent duplicate by email/phone
+        if (request.getEmail() != null && customerRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Customer already exists with this email");
+        }
+        if (request.getPhone() != null && customerRepository.existsByPhone(request.getPhone())) {
+            throw new RuntimeException("Customer already exists with this phone");
         }
 
-        List<Customer> customers;
+        // 🔹 A: Add default values for type/status if null
+        Customer customer = Customer.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .address(request.getAddress())
+                .industry(request.getIndustry())
+                .website(request.getWebsite())
+                .type(request.getType() != null ? request.getType() : CustomerType.REGULAR)
+                .status(request.getStatus() != null ? request.getStatus() : CustomerStatus.ACTIVE)
+                .contactPersonCount(request.getContactPersonCount())
+                .tags(request.getTags())
+                .department(currentUser.getDepartment())
+                .assignedUser(currentUser)
+                .build();
+
+        Customer saved = customerRepository.save(customer);
+
+        // Handle optional contacts
+        if (request.getContacts() != null) {
+            List<Contact> contacts = request.getContacts().stream().map(contactReq -> {
+                Contact contact = new Contact();
+                contact.setCustomer(saved);
+                contact.setFirstName(contactReq.getFirstName());
+                contact.setLastName(contactReq.getLastName());
+                contact.setEmail(contactReq.getEmail());
+                contact.setPhone(contactReq.getPhone());
+                contact.setRole(contactReq.getRole());
+                contact.setPrimary(contactReq.isPrimary());
+                return contact;
+            }).collect(Collectors.toList());
+            contactRepository.saveAll(contacts);
+            saved.setContacts(contacts);
+        }
+
+        return toResponse(saved);
+    }
+
+    @Override
+    public Page<CustomerResponse> getAll(Pageable pageable, String search) {
+        User currentUser = getCurrentUser();
+        Page<Customer> page;
+
         if (currentUser.getRole().getKey() == RoleKey.ADMIN) {
-            customers = customerRepository.findAll();
+            page = (search != null && !search.isEmpty())
+                    ? customerRepository.searchGlobal(search, pageable)
+                    : customerRepository.findAll(pageable);
+        } else if (currentUser.getRole().getKey() == RoleKey.SUB_ADMIN) {
+            page = customerRepository.findByDepartment_Id(
+                    currentUser.getDepartment().getId(), pageable);
         } else {
-            // Staff sees only their customers
-            customers = customerRepository.findByOwnerId(currentUser.getId());
+            page = customerRepository.findByAssignedUserId(
+                    currentUser.getId(), pageable);
         }
 
-        return customers.stream().map(this::toResponse).collect(Collectors.toList());
+        return page.map(this::toResponse);
     }
 
     @Override
     public CustomerResponse getCustomerById(Long id) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
-        }
+        User currentUser = getCurrentUser();
+        if (currentUser == null) throw new AccessDeniedException("Unauthorized");
 
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
 
-        // Check access
-        if (currentUser.getRole().getKey() != RoleKey.ADMIN &&
-                !customer.getOwner().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Access denied");
-        }
+        if (!canAccessCustomer(customer, currentUser))
+            throw new AccessDeniedException("Access Denied");
 
         return toResponse(customer);
     }
 
     @Override
     public CustomerResponse updateCustomer(Long id, CustomerRequest request) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
-        }
+        User currentUser = getCurrentUser();
 
-        Customer customer = customerRepository.findById(id)
+        Customer c = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
-        // Only admin or owner can update
-        if (currentUser.getRole().getKey() != RoleKey.ADMIN &&
-                !customer.getOwner().getId().equals(currentUser.getId())) {
+        if (!canAccessCustomer(c, currentUser))
             throw new AccessDeniedException("Access denied");
-        }
 
-        customer.setName(request.getName());
-        customer.setEmail(request.getEmail());
-        customer.setPhone(request.getPhone());
-        customer.setAddress(request.getAddress());
-        customer.setIndustry(request.getIndustry());
-        customer.setType(request.getType());
-        customer.setStatus(request.getStatus());
-        customer.setWebsite(request.getWebsite());
+        c.setName(request.getName());
+        c.setEmail(request.getEmail());
+        c.setPhone(request.getPhone());
+        c.setAddress(request.getAddress());
+        c.setIndustry(request.getIndustry());
+        c.setWebsite(request.getWebsite());
+        c.setType(request.getType());
+        c.setStatus(request.getStatus());
+        c.setContactPersonCount(request.getContactPersonCount());
+        c.setTags(request.getTags());
 
-        Customer updated = customerRepository.save(customer);
-
-        // Update contacts
-        if (request.getContacts() != null) {
-            // Delete old contacts
-            if (updated.getContacts() != null) {
-                contactRepository.deleteAll(updated.getContacts());
-            }
-            List<Contact> contacts = request.getContacts().stream().map(c -> {
-                Contact contact = new Contact();
-                contact.setCustomer(updated);
-                contact.setFirstName(c.getFirstName());
-                contact.setLastName(c.getLastName());
-                contact.setEmail(c.getEmail());
-                contact.setPhone(c.getPhone());
-                contact.setRole(Contact.Role.valueOf(c.getRole().toUpperCase()));
-                contact.setPrimary(c.isPrimary());
-                return contact;
-            }).collect(Collectors.toList());
-            contactRepository.saveAll(contacts);
-            updated.setContacts(contacts);
-        }
-
+        Customer updated = customerRepository.save(c);
         return toResponse(updated);
     }
 
     @Override
     public void deleteCustomer(Long id) {
-        User currentUser = authUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new AccessDeniedException("Unauthorized");
-        }
+        User currentUser = getCurrentUser();
+        if (currentUser == null) throw new AccessDeniedException("Unauthorized");
 
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
 
-        if (currentUser.getRole().getKey() != RoleKey.ADMIN &&
-                !customer.getOwner().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Access denied");
-        }
+        if (!canAccessCustomer(customer, currentUser))
+            throw new AccessDeniedException("Access Denied");
 
-        customerRepository.delete(customer);
+        // 🔹 D: Soft delete instead of hard delete
+        customer.setDeleted(true);
+        customerRepository.save(customer);
     }
 
-    private CustomerResponse toResponse(Customer customer) {
-        CustomerResponse response = new CustomerResponse();
-        response.setId(customer.getId());
-        response.setName(customer.getName());
-        response.setEmail(customer.getEmail());
-        response.setPhone(customer.getPhone());
-        response.setAddress(customer.getAddress());
-        response.setIndustry(customer.getIndustry());
-        response.setType(customer.getType() != null ? customer.getType().name() : null);
-        response.setStatus(customer.getStatus() != null ? customer.getStatus().name() : null);
-        response.setWebsite(customer.getWebsite());
-        response.setOwnerName(customer.getOwner() != null ? customer.getOwner().getName() : null);
-        response.setDepartmentName(customer.getDepartment() != null ? customer.getDepartment().getName() : null);
-
-        if (customer.getContacts() != null) {
-            response.setContacts(customer.getContacts().stream().map(contact -> {
-                CustomerResponse.ContactResponse cRes = new CustomerResponse.ContactResponse();
-                cRes.setId(contact.getId());
-                cRes.setFirstName(contact.getFirstName());
-                cRes.setLastName(contact.getLastName());
-                cRes.setEmail(contact.getEmail());
-                cRes.setPhone(contact.getPhone());
-                cRes.setRole(contact.getRole().name());
-                cRes.setPrimary(contact.isPrimary());
-                return cRes;
-            }).collect(Collectors.toList()));
-        }
-
-        return response;
+    // 🔹 B: Add createdAt, updatedAt fields
+    private CustomerResponse toResponse(Customer c) {
+        return CustomerResponse.builder()
+                .id(c.getId())
+                .name(c.getName())
+                .email(c.getEmail())
+                .phone(c.getPhone())
+                .address(c.getAddress())
+                .industry(c.getIndustry())
+                .type(c.getType())
+                .status(c.getStatus())
+                .website(c.getWebsite())
+                .contactPersonCount(c.getContactPersonCount())
+                .tags(c.getTags())
+                .assignedUserName(c.getAssignedUser() != null ? c.getAssignedUser().getName() : null)
+                .departmentName(c.getDepartment() != null ? c.getDepartment().getName() : null)
+                .totalContacts(c.getContacts() != null ? c.getContacts().size() : 0)
+                .createdAt(c.getCreatedAt())
+                .updatedAt(c.getUpdatedAt())
+                .build();
     }
 }
-

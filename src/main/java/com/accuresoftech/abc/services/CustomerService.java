@@ -2,30 +2,22 @@ package com.accuresoftech.abc.services;
 
 import com.accuresoftech.abc.dto.request.CustomerRequest;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CustomerService {
+
     CustomerResponse createCustomer(CustomerRequest request);
-    List<CustomerResponse> getAllCustomers();
+
+    Page<CustomerResponse> getAll(Pageable pageable, String search);
+
     CustomerResponse getCustomerById(Long id);
+
     CustomerResponse updateCustomer(Long id, CustomerRequest request);
+
     void deleteCustomer(Long id);
+    
+    
+    
+    
 }
-
-
-
-/*package com.accuresoftech.abc.services;
-
-import com.accuresoftech.abc.dto.request.CustomerRequest;
-import com.accuresoftech.abc.dto.response.CustomerResponse;
-
-import java.util.List;
-
-public interface CustomerService {
-    CustomerResponse create(CustomerRequest request);
-    List<CustomerResponse> getAll();
-    CustomerResponse getById(Long id);
-}*/
-
-
-
