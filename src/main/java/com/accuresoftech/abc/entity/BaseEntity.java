@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public abstract class BaseEntity {
+	
+	
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
@@ -20,6 +22,11 @@ public abstract class BaseEntity {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	// Soft-delete flag (optional)
+	@Column(name = "deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private boolean deleted = false;
+
 
 	// audit fields (createdBy/updatedBy) removed for now per request
 }
