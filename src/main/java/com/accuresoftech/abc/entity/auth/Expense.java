@@ -4,7 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.accuresoftech.abc.entity.BaseEntity;
-import com.accuresoftech.abc.enums.ProposalStatus;
+import com.accuresoftech.abc.enums.ExpenseCategory;
+import com.accuresoftech.abc.enums.ExpenseStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,31 +25,39 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "proposals")
+@Table(name = "expenses")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Proposal extends BaseEntity {
+public class Expense extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ExpenseCategory category;  // TRAVEL, MARKETING, SOFTWARE, SALARY, OTHER
+
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal amount;
+
+    @Column(nullable = false)
+    private LocalDate date;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private BigDecimal budget;
-
-//    @Enumerated(EnumType.STRING)
-//    private ProposalStatus status;
-
-    private LocalDate deadline;
-
+    // Optional relation to customer (null allowed)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
+    @JoinColumn(name = "related_customer_id", nullable = true)
+    private Customer relatedCustomer;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ExpenseStatus status = ExpenseStatus.PENDING; // default pending
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
@@ -58,12 +67,11 @@ public class Proposal extends BaseEntity {
     @JoinColumn(name = "owner_id")
     private User owner;
 
+    // The Owner means:
+    // “Who created this record?” or “Who is responsible for this record?”
 
-
-    @Enumerated(EnumType.STRING)
-    private ProposalStatus status = ProposalStatus.DRAFT;
-
-
-
+ // ✅ Soft delete flag
+    @Column(nullable = false)
+    private boolean deleted = false;
 
 }

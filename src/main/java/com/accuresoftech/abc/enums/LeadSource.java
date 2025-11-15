@@ -1,6 +1,6 @@
 package com.accuresoftech.abc.enums;
 
-public enum LeadSource 
+public enum LeadSource
 {
 	 	WEBSITE,
 	    REFERRAL,

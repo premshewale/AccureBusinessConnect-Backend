@@ -1,6 +1,6 @@
 package com.accuresoftech.abc.exception;
 
-public class BusinessValidationException extends RuntimeException 
+public class BusinessValidationException extends RuntimeException
 {
     public BusinessValidationException(String message) {
         super(message);

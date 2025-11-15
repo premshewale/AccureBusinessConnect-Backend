@@ -1,14 +1,18 @@
 package com.accuresoftech.abc.security;
 
-import com.accuresoftech.abc.entity.auth.User;
-import com.accuresoftech.abc.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import com.accuresoftech.abc.entity.auth.User;
+import com.accuresoftech.abc.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

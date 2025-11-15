@@ -3,13 +3,15 @@ package com.accuresoftech.abc.dto.request;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import com.accuresoftech.abc.enums.ProposalStatus;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ProposalRequest {
-   
+
     @NotBlank(message = "Description is required")
     private String description;
 
@@ -29,8 +31,8 @@ public class ProposalRequest {
 
     @NotNull(message = "Owner ID is required")
     private Long ownerId;
-    
-    
-    
-    
+
+
+
+
 }

@@ -1,15 +1,24 @@
 package com.accuresoftech.abc.controller;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.accuresoftech.abc.dto.request.CustomerRequest;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.services.CustomerService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +30,7 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<CustomerResponse> create(@RequestBody CustomerRequest request) {
         CustomerResponse response = customerService.createCustomer(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response); // ✅ 201 Created
+        return ResponseEntity.status(HttpStatus.CREATED).body(response); 
     }
 
     @GetMapping
@@ -32,12 +41,12 @@ public class CustomerController {
 
         Page<CustomerResponse> response =
                 customerService.getAll(PageRequest.of(page, size), search);
-        return ResponseEntity.ok(response); // ✅ 200 OK
+        return ResponseEntity.ok(response); 
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(customerService.getCustomerById(id)); // ✅ 200 OK
+        return ResponseEntity.ok(customerService.getCustomerById(id)); 
     }
 
     @PutMapping("/{id}")
@@ -45,12 +54,12 @@ public class CustomerController {
             @PathVariable Long id,
             @RequestBody CustomerRequest request) {
 
-        return ResponseEntity.ok(customerService.updateCustomer(id, request)); // ✅ 200 OK
+        return ResponseEntity.ok(customerService.updateCustomer(id, request)); 
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         customerService.deleteCustomer(id);
-        return ResponseEntity.noContent().build(); // ✅ 204 No Content
+        return ResponseEntity.noContent().build(); 
     }
 }

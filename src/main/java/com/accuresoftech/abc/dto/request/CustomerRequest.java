@@ -11,18 +11,18 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
-public class CustomerRequest 
+public class CustomerRequest
 {
     @NotBlank
     private String name;
-   
+
     @Email
     private String email;
 
     @Pattern(regexp = "\\d{10}", message = "Phone must be 10 digits")
     private String phone;
-    
-    
+
+
     private String address;
     private String industry;
     private String website;
@@ -32,8 +32,8 @@ public class CustomerRequest
     private CustomerStatus status;
     private Long assignedUserId;
     private Long departmentId;
-    
-    
+
+
     private List<ContactRequest> contacts;
-    
+
 }
