@@ -1,9 +1,9 @@
 package com.accuresoftech.abc.services;
 
+import java.util.List;
+
 import com.accuresoftech.abc.dto.response.DepartmentResponse;
 import com.accuresoftech.abc.entity.auth.Department;
-
-import java.util.List;
 
 public interface DepartmentService {
 	DepartmentResponse create(Department d);

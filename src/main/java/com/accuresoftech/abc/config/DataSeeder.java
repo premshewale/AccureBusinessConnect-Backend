@@ -1,11 +1,13 @@
 package com.accuresoftech.abc.config;
 
+import org.springframework.stereotype.Component;
+
 import com.accuresoftech.abc.entity.auth.Role;
 import com.accuresoftech.abc.enums.RoleKey;
 import com.accuresoftech.abc.repository.RoleRepository;
+
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor

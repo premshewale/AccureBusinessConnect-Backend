@@ -1,18 +1,21 @@
 package com.accuresoftech.abc.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @MappedSuperclass
 @Getter
 @Setter
 public abstract class BaseEntity {
+
+
 	@CreationTimestamp
 	@Column(name = "created_at", updatable = false)
 	private LocalDateTime createdAt;
@@ -20,6 +23,11 @@ public abstract class BaseEntity {
 	@UpdateTimestamp
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
+
+	// Soft-delete flag (optional)
+	@Column(name = "deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+	private boolean deleted = false;
+
 
 	// audit fields (createdBy/updatedBy) removed for now per request
 }
