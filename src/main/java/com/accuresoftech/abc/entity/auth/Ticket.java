@@ -1,12 +1,13 @@
 package com.accuresoftech.abc.entity.auth;
 
+import com.accuresoftech.abc.entity.BaseEntity;
 import com.accuresoftech.abc.enums.TicketPriority;
 import com.accuresoftech.abc.enums.TicketStatus;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tickets")
-public class Ticket {
+public class Ticket extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
