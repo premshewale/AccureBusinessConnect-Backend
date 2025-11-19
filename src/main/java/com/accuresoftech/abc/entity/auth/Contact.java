@@ -1,9 +1,25 @@
 package com.accuresoftech.abc.entity.auth;
 
-import jakarta.persistence.*;
-import lombok.*;
-import com.accuresoftech.abc.enums.ContactRole;
 import java.time.LocalDateTime;
+
+import com.accuresoftech.abc.entity.BaseEntity;
+import com.accuresoftech.abc.enums.ContactRole;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -12,7 +28,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "contacts")
-public class Contact {
+public class Contact extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +48,11 @@ public class Contact {
 
     private boolean isPrimary;
 
-    private LocalDateTime createdAt = LocalDateTime.now(); 
-    
-    
-    
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;;
+
 }

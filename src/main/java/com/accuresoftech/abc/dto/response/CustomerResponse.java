@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CustomerResponse {
- 
+
         private Long id;
         private String name;
         private String email;
@@ -29,14 +29,14 @@ public class CustomerResponse {
         private Integer contactPersonCount;
         private String tags;
 
-       
+
         private Integer totalContacts;
         private String assignedUserName;
         private String departmentName;
-    
-        
+
+
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
-        
-        
+
+
 }

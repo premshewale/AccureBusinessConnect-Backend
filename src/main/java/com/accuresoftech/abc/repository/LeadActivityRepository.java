@@ -1,13 +1,14 @@
 package com.accuresoftech.abc.repository;
 
-import com.accuresoftech.abc.entity.auth.LeadActivity;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.accuresoftech.abc.entity.auth.LeadActivity;
 
 @Repository
-public interface LeadActivityRepository extends JpaRepository<LeadActivity, Long> 
+public interface LeadActivityRepository extends JpaRepository<LeadActivity, Long>
 {
     List<LeadActivity> findByLeadIdOrderByCreatedAtDesc(Long leadId);
 }

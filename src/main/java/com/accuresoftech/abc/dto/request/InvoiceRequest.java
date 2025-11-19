@@ -31,4 +31,6 @@ public class InvoiceRequest {
  
     // optional: who created it (if null, service may set from context or proposal owner) 
     private Long createdBy; 
+    
+    private Long proposalId;  
 }

@@ -1,23 +1,30 @@
 package com.accuresoftech.abc.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.accuresoftech.abc.dto.request.RegisterUserRequest;
 import com.accuresoftech.abc.dto.request.UpdateUserRequest;
 import com.accuresoftech.abc.dto.response.UserResponse;
-import com.accuresoftech.abc.dto.response.ApiResponse;
 import com.accuresoftech.abc.services.UserService;
 import com.accuresoftech.abc.utils.AuthUtils;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController 
+public class UserController
 {
 
 	private final UserService userService;
@@ -52,11 +59,11 @@ public class UserController
 	@PutMapping("/{id}/deactivate")
 	public ResponseEntity<UserResponse> deactivateUser(@PathVariable Long id) {
 		UserResponse res = userService.deactivateUser(id);
-		
+
 		return ResponseEntity.ok(res);
 	}
 
-	
+
 	@PutMapping("/{id}/activate")
 	public ResponseEntity<UserResponse> activateUser(@PathVariable Long id) {
 		UserResponse res = userService.activateUser(id);

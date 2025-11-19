@@ -13,21 +13,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProposalResponse 
+public class ProposalResponse
 {
 	private Long id;
     private BigDecimal budget;
-    
-  
+
+
     private String description;
-  
+
     private String status;
     private LocalDate deadline;
     private String customerName;
     private String departmentName;
     private String ownerName;
     private LocalDateTime createdAt;
-    
-    
-    
+
+
+
 }

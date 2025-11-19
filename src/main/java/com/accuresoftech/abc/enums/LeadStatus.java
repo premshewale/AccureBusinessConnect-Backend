@@ -1,6 +1,6 @@
 package com.accuresoftech.abc.enums;
 
-public enum LeadStatus 
+public enum LeadStatus
 {
 	NEW,
     CONTACTED,
