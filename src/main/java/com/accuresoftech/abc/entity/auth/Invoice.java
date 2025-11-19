@@ -13,14 +13,16 @@ import java.util.List;
 @NoArgsConstructor 
 @AllArgsConstructor 
 @Builder 
-public class Invoice extends BaseEntity { 
-@Id 
-@GeneratedValue(strategy = GenerationType.IDENTITY) 
-private Long id; 
-// optional link to a proposal (if invoice was created from a proposal) 
-@ManyToOne(fetch = FetchType.LAZY) 
-@JoinColumn(name = "proposal_id") 
-private Proposal proposal; 
+public class Invoice extends BaseEntity 
+{ 
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
+	private Long id; 
+	 
+	@ManyToOne(fetch = FetchType.LAZY) 
+	@JoinColumn(name = "proposal_id") 
+	private Proposal proposal; 
+
     @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "customer_id", nullable = false) 
     private Customer customer; 
@@ -47,7 +49,6 @@ private Proposal proposal;
     private User createdBy; 
  
     // payments (optional, if you have Payment entity) 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = 
-true) 
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true) 
     private List<Payment> payments; 
 }

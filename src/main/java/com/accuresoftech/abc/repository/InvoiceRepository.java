@@ -19,4 +19,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     @Query("SELECT i FROM Invoice i WHERE i.status = :status")
     List<Invoice> findByStatus(@Param("status") String status);
+    
+    
+    
+    long count(); // total invoices
+
+    long countByDepartment_Id(Long departmentId);
+
+    long countByCreatedBy_Id(Long userId);
 }

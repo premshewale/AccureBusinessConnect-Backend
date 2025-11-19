@@ -51,5 +51,8 @@ public class Contact extends BaseEntity{
     private LocalDateTime createdAt = LocalDateTime.now();
 
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;;
 
 }

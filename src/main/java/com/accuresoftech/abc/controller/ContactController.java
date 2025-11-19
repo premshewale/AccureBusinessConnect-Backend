@@ -10,47 +10,60 @@ import com.accuresoftech.abc.dto.response.ContactResponse;
 import com.accuresoftech.abc.services.ContactService;
 
 import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequestMapping("/api/customers/{customerId}/contacts")
+@RequestMapping("/api/contacts")
 @RequiredArgsConstructor
 public class ContactController {
 
     private final ContactService contactService;
 
-    // Create a new contact for a customer
-    @PostMapping
+    // ---------------------------------------------------------
+    //  A) CUSTOMER-SPECIFIC CONTACTS
+    // ---------------------------------------------------------
+
+    @PostMapping("/customer/{customerId}")
     public ResponseEntity<ContactResponse> createContact(
             @PathVariable Long customerId,
             @RequestBody ContactRequest request) {
-        ContactResponse response = contactService.createContact(customerId, request);
-        return ResponseEntity.status(201).body(response); // HTTP 201 for new resource
+
+        return ResponseEntity
+                .status(201)
+                .body(contactService.createContact(customerId, request));
     }
 
-    // Get all contacts for a customer
-    @GetMapping
+    @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<ContactResponse>> getContactsByCustomer(
             @PathVariable Long customerId) {
-        List<ContactResponse> contacts = contactService.getContactsByCustomer(customerId);
-        return ResponseEntity.ok(contacts);
+
+        return ResponseEntity.ok(contactService.getContactsByCustomer(customerId));
     }
 
-    // Update a contact for a customer
+
+    // ---------------------------------------------------------
+    //  B) GLOBAL CONTACTS (ADMIN)
+    // ---------------------------------------------------------
+
+    @GetMapping
+    public ResponseEntity<List<ContactResponse>> getAllContacts() {
+        return ResponseEntity.ok(contactService.getAllContacts());
+    }
+
+
+    // ---------------------------------------------------------
+    // COMMON UPDATE / DELETE
+    // ---------------------------------------------------------
+
     @PutMapping("/{id}")
     public ResponseEntity<ContactResponse> updateContact(
-            @PathVariable Long customerId, // required for path mapping
             @PathVariable Long id,
             @RequestBody ContactRequest request) {
-        ContactResponse updated = contactService.updateContact(id, request);
-        return ResponseEntity.ok(updated);
+
+        return ResponseEntity.ok(contactService.updateContact(id, request));
     }
 
-    // Delete a contact for a customer
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteContact(
-            @PathVariable Long customerId, // required for path mapping
-            @PathVariable Long id) {
+    public ResponseEntity<Void> deleteContact(@PathVariable Long id) {
         contactService.deleteContact(id);
-        return ResponseEntity.noContent().build(); // HTTP 204 for delete
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,5 +1,6 @@
 package com.accuresoftech.abc.services;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.accuresoftech.abc.dto.request.ExpenseRequest;
@@ -20,7 +21,9 @@ public interface ExpenseService {
 	ExpenseResponse updateExpenseStatus(Long id, String status);
 
 	List<ExpenseResponse> getByDepartment(Long departmentId);
+	
+  List<ExpenseResponse> getExpensesByDeptAndDateRange(Long departmentId, LocalDate start, LocalDate end);
 
-	List<ExpenseResponse> getByStatus(String status);
+  List<ExpenseResponse> getByStatus(String status);
 
 }

@@ -5,7 +5,8 @@ import java.util.List;
 import com.accuresoftech.abc.dto.request.ContactRequest;
 import com.accuresoftech.abc.dto.response.ContactResponse;
 
-public interface ContactService {
+public interface ContactService 
+{
 	ContactResponse createContact(Long customerId, ContactRequest request);
 
 	List<ContactResponse> getContactsByCustomer(Long customerId);
@@ -13,5 +14,9 @@ public interface ContactService {
 	ContactResponse updateContact(Long id, ContactRequest request);
 
 	void deleteContact(Long id);
+
+	List<ContactResponse> getAllContacts();
+	
+//	List<ContactResponse> getAllContacts();
 
 }

@@ -25,5 +25,15 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>
     	       "LOWER(c.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
     	       "LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
     	       "LOWER(c.phone) LIKE LOWER(CONCAT('%', :search, '%')))")
-    	Page<Customer> searchGlobal(@Param("search") String search, Pageable pageable);
+    Page<Customer> searchGlobal(@Param("search") String search, Pageable pageable);
+    
+   
+    long count(); // total customers
+
+    // Count by department
+    long countByDepartment_Id(Long departmentId);
+
+    // Count by assigned user
+    long countByAssignedUser_Id(Long userId);
+    
 }

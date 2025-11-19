@@ -2,16 +2,19 @@ package com.accuresoftech.abc.servicesimpl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.accuresoftech.abc.dto.request.ContactRequest;
 import com.accuresoftech.abc.dto.response.ContactResponse;
 import com.accuresoftech.abc.entity.auth.Contact;
 import com.accuresoftech.abc.entity.auth.Customer;
+import com.accuresoftech.abc.entity.auth.User;
 import com.accuresoftech.abc.exception.ResourceNotFoundException;
 import com.accuresoftech.abc.repository.ContactRepository;
 import com.accuresoftech.abc.repository.CustomerRepository;
+import com.accuresoftech.abc.repository.UserRepository;
 import com.accuresoftech.abc.services.ContactService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +25,15 @@ public class ContactServiceImpl implements ContactService {
 
 	private final ContactRepository contactRepository;
 	private final CustomerRepository customerRepository;
-
+	private final UserRepository userRepository;
+	
+	 private User getCurrentUser() {
+	        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	        String email = auth.getName();
+	        return userRepository.findByEmail(email)
+	                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+	    }
+	 
 	@Override
 	public ContactResponse createContact(Long customerId, ContactRequest request) {
 		Customer customer = customerRepository.findById(customerId)
@@ -37,6 +48,38 @@ public class ContactServiceImpl implements ContactService {
 		return toResponse(saved);
 	}
 
+	@Override
+	public List<ContactResponse> getAllContacts() {
+
+	    User currentUser = getCurrentUser();
+	    String role = currentUser.getRole().getKey().name();
+
+	    List<Contact> contacts;
+
+	    switch (role) {
+	        case "ADMIN":
+	            contacts = contactRepository.findAll();
+	            break;
+
+	        case "SUB_ADMIN":
+	            contacts = contactRepository.findByCustomer_Department_Id(
+	                currentUser.getDepartment().getId()
+	            );
+	            break;
+
+	        case "STAFF":
+	            contacts = contactRepository.findByOwner_Id(
+	                currentUser.getId()
+	            );
+	            break;
+
+	        default:
+	            contacts = List.of();
+	    }
+
+	    return contacts.stream().map(this::toResponse).toList();
+	}
+	
 	@Override
 	public List<ContactResponse> getContactsByCustomer(Long customerId) {
 		return contactRepository.findByCustomer_Id(customerId).stream().map(this::toResponse)

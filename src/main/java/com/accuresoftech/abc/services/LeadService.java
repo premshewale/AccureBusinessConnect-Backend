@@ -6,7 +6,8 @@ import com.accuresoftech.abc.dto.request.LeadConversionRequest;
 import com.accuresoftech.abc.dto.request.LeadRequest;
 import com.accuresoftech.abc.dto.response.LeadResponse;
 
-public interface LeadService {
+public interface LeadService 
+{
 	List<LeadResponse> getAllLeads();
 
 	LeadResponse getLeadById(Long id);

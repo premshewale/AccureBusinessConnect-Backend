@@ -1,5 +1,6 @@
 package com.accuresoftech.abc.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -64,6 +65,7 @@ public class ExpenseController {
         return ResponseEntity.ok(expense);
     }
 
+    // Expense report filter- department
     @GetMapping("/department/{departmentId}")
     public ResponseEntity<List<ExpenseResponse>> getByDepartment(@PathVariable Long departmentId) {
         List<ExpenseResponse> expenses = expenseService.getByDepartment(departmentId);
@@ -73,6 +75,19 @@ public class ExpenseController {
     @GetMapping("/status/{status}")
     public ResponseEntity<List<ExpenseResponse>> getByStatus(@PathVariable String status) {
         List<ExpenseResponse> expenses = expenseService.getByStatus(status);
+        return ResponseEntity.ok(expenses);
+    }
+    
+    @GetMapping("/department/{departmentId}/range")
+    public ResponseEntity<List<ExpenseResponse>> getExpensesByDeptAndDateRange(
+            @PathVariable Long departmentId,
+            @RequestParam("start") String startDate,
+            @RequestParam("end") String endDate) {
+
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        List<ExpenseResponse> expenses = expenseService.getExpensesByDeptAndDateRange(departmentId, start, end);
         return ResponseEntity.ok(expenses);
     }
 }

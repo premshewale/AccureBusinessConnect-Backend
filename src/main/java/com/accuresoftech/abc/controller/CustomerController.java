@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.data.domain.Pageable;
 import com.accuresoftech.abc.dto.request.CustomerRequest;
+import com.accuresoftech.abc.dto.response.CustomPageResponse;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.services.CustomerService;
 
@@ -34,16 +36,15 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CustomerResponse>> getAll(
+    public CustomPageResponse<CustomerResponse> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search) {
-
-        Page<CustomerResponse> response =
-                customerService.getAll(PageRequest.of(page, size), search);
-        return ResponseEntity.ok(response); 
+            @RequestParam(required = false) String search
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return customerService.getAll(pageable, search);
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<CustomerResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(customerService.getCustomerById(id)); 

@@ -1,5 +1,6 @@
 package com.accuresoftech.abc.servicesimpl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -240,6 +241,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 				.toList();
 	}
 
+	@Override
+	public List<ExpenseResponse> getExpensesByDeptAndDateRange(Long departmentId, LocalDate start, LocalDate end) {
+	    List<Expense> expenses = expenseRepository
+	        .findByDepartmentIdAndDateBetweenAndDeletedFalse(departmentId, start, end); 
+	    return expenses.stream()
+	                   .map(this::toResponse) 
+	                   .toList();
+	}
+	
 	// Get by Status
 	@Override
 	@Transactional(readOnly = true)

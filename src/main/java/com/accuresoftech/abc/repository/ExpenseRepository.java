@@ -1,5 +1,6 @@
 package com.accuresoftech.abc.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 	List<Expense> findByRelatedCustomerIdAndDeletedFalse(Long customerId);
 	List<Expense> findByStatusAndOwnerIdAndDeletedFalse(ExpenseStatus status, Long ownerId);
 
-
+	// List<Expense> findByDepartmentIdAndDateBetween(Long departmentId, LocalDate start, LocalDate end);
+	 List<Expense> findByDepartmentIdAndDateBetweenAndDeletedFalse(Long departmentId, LocalDate start, LocalDate end);
+	
 }

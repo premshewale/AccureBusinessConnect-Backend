@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.accuresoftech.abc.dto.request.CustomerRequest;
+import com.accuresoftech.abc.dto.response.CustomPageResponse;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.entity.auth.Contact;
 import com.accuresoftech.abc.entity.auth.Customer;
@@ -89,23 +90,36 @@ public class CustomerServiceImpl implements CustomerService {
 		return toResponse(saved);
 	}
 
+	
 	@Override
-	public Page<CustomerResponse> getAll(Pageable pageable, String search) {
-		User currentUser = getCurrentUser();
-		Page<Customer> page;
+	public CustomPageResponse<CustomerResponse> getAll(Pageable pageable, String search) {
 
-		if (currentUser.getRole().getKey() == RoleKey.ADMIN) {
-			page = (search != null && !search.isEmpty()) ? customerRepository.searchGlobal(search, pageable)
-					: customerRepository.findAll(pageable);
-		} else if (currentUser.getRole().getKey() == RoleKey.SUB_ADMIN) {
-			page = customerRepository.findByDepartment_Id(currentUser.getDepartment().getId(), pageable);
-		} else {
-			page = customerRepository.findByAssignedUserId(currentUser.getId(), pageable);
-		}
+	    User currentUser = getCurrentUser();
+	    Page<Customer> page;
 
-		return page.map(this::toResponse);
+	    if (currentUser.getRole().getKey() == RoleKey.ADMIN) {
+	        page = (search != null && !search.isEmpty())
+	                ? customerRepository.searchGlobal(search, pageable)
+	                : customerRepository.findAll(pageable);
+	    } else if (currentUser.getRole().getKey() == RoleKey.SUB_ADMIN) {
+	        page = customerRepository.findByDepartment_Id(currentUser.getDepartment().getId(), pageable);
+	    } else {
+	        page = customerRepository.findByAssignedUserId(currentUser.getId(), pageable);
+	    }
+
+	    List<CustomerResponse> list = page.getContent()
+	                                      .stream()
+	                                      .map(this::toResponse)
+	                                      .collect(Collectors.toList());
+
+	    return CustomPageResponse.<CustomerResponse>builder()
+	            .content(list)
+	            .totalElements(page.getTotalElements())
+	            .totalPages(page.getTotalPages())
+	            .build();
 	}
 
+	
 	@Override
 	public CustomerResponse getCustomerById(Long id) {
 		User currentUser = getCurrentUser();
@@ -121,6 +135,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 
 		return toResponse(customer);
+
 	}
 
 	@Override
@@ -163,12 +178,11 @@ public class CustomerServiceImpl implements CustomerService {
 			throw new AccessDeniedException("Access Denied");
 		}
 
-		// 🔹 D: Soft delete instead of hard delete
+		// D: Soft delete instead of hard delete
 		customer.setDeleted(true);
 		customerRepository.save(customer);
 	}
 
-	// 🔹 B: Add createdAt, updatedAt fields
 	private CustomerResponse toResponse(Customer c) {
 		return CustomerResponse.builder().id(c.getId()).name(c.getName()).email(c.getEmail()).phone(c.getPhone())
 				.address(c.getAddress()).industry(c.getIndustry()).type(c.getType()).status(c.getStatus())

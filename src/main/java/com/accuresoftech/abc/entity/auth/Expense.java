@@ -33,45 +33,45 @@ import lombok.Setter;
 @Builder
 public class Expense extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ExpenseCategory category;  // TRAVEL, MARKETING, SOFTWARE, SALARY, OTHER
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ExpenseCategory category; // TRAVEL, MARKETING, SOFTWARE, SALARY, OTHER
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal amount;
+	@Column(nullable = false, precision = 12, scale = 2)
+	private BigDecimal amount;
 
-    @Column(nullable = false)
-    private LocalDate date;
+	@Column(nullable = false)
+	private LocalDate date;
 
-    @Column(columnDefinition = "TEXT")
-    private String description;
+	@Column(columnDefinition = "TEXT")
+	private String description;
 
-    // Optional relation to customer (null allowed)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_customer_id", nullable = true)
-    private Customer relatedCustomer;
+	// Optional relation to customer (null allowed)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "related_customer_id", nullable = true)
+	private Customer relatedCustomer;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ExpenseStatus status = ExpenseStatus.PENDING; // default pending
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private ExpenseStatus status = ExpenseStatus.PENDING; // default pending
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private Department department;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "department_id")
+	private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private User owner;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "owner_id")
+	private User owner;
 
-    // The Owner means:
-    // “Who created this record?” or “Who is responsible for this record?”
+	// The Owner means:
+	// “Who created this record?” or “Who is responsible for this record?”
 
- // ✅ Soft delete flag
-    @Column(nullable = false)
-    private boolean deleted = false;
+	// Soft delete flag
+	@Column(nullable = false)
+	private boolean deleted = false;
 
 }
