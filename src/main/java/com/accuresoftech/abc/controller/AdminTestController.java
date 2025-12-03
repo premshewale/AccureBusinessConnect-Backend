@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/test")
 public class AdminTestController {
 
-	@GetMapping("	")
+	@GetMapping("/ping")
 	public ResponseEntity<?> ping() {
 		return ResponseEntity.ok("Admin Module Active and Authenticated");
 	}

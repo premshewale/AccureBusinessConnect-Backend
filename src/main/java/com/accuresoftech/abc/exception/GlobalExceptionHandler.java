@@ -48,4 +48,21 @@ public class GlobalExceptionHandler {
 				"timestamp", LocalDateTime.now().toString());
 		return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
+    @ExceptionHandler(ConflictException.class)
+    protected ResponseEntity<Object> handleConflict(ConflictException ex) {
+        ApiError err = new ApiError(HttpStatus.CONFLICT);
+        err.setMessage(ex.getMessage());
+        err.setDebugMessage(ex.getMessage());
+        err.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(err, new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<Object> handleBadRequest(BadRequestException ex) {
+        ApiError err = new ApiError(HttpStatus.BAD_REQUEST);
+        err.setMessage(ex.getMessage());
+        err.setDebugMessage(ex.getMessage());
+        err.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<>(err, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
 }
