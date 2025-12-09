@@ -1,10 +1,5 @@
 package com.accuresoftech.abc.servicesimpl;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.accuresoftech.abc.dto.response.DepartmentResponse;
 import com.accuresoftech.abc.entity.auth.Department;
 import com.accuresoftech.abc.entity.auth.User;
@@ -15,8 +10,11 @@ import com.accuresoftech.abc.repository.DepartmentRepository;
 import com.accuresoftech.abc.repository.UserRepository;
 import com.accuresoftech.abc.services.DepartmentService;
 import com.accuresoftech.abc.utils.EntityMapper;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

@@ -1,10 +1,9 @@
 package com.accuresoftech.abc.repository;
 
-import java.util.Optional;
-
+import com.accuresoftech.abc.entity.auth.Department;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.accuresoftech.abc.entity.auth.Department;
+import java.util.Optional;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	Optional<Department> findByName(String name);

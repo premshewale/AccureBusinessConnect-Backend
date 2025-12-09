@@ -1,10 +1,10 @@
 package com.accuresoftech.abc.services;
 
-import java.util.List;
-
 import com.accuresoftech.abc.dto.request.RegisterUserRequest;
 import com.accuresoftech.abc.dto.request.UpdateUserRequest;
 import com.accuresoftech.abc.dto.response.UserResponse;
+
+import java.util.List;
 
 public interface UserService {
 	UserResponse create(RegisterUserRequest req);

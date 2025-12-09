@@ -1,7 +1,6 @@
 package com.accuresoftech.abc.dto.request;
 
 import com.accuresoftech.abc.enums.UserStatus;
-
 import lombok.Data;
 
 @Data

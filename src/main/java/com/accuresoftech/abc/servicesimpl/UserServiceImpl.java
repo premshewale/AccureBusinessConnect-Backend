@@ -1,12 +1,5 @@
 package com.accuresoftech.abc.servicesimpl;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.accuresoftech.abc.dto.request.RegisterUserRequest;
 import com.accuresoftech.abc.dto.request.UpdateUserRequest;
 import com.accuresoftech.abc.dto.response.UserResponse;
@@ -24,7 +17,15 @@ import com.accuresoftech.abc.services.UserService;
 import com.accuresoftech.abc.utils.AuthUtils;
 import com.accuresoftech.abc.utils.EntityMapper;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -69,13 +70,6 @@ public class UserServiceImpl implements UserService {
 				.department(dept).status(UserStatus.ACTIVE).build();
 
 		userRepository.save(u);
-
-		// Assign as Department Manager if Sub-Admin
-		if (u.getRole().getKey() == RoleKey.SUB_ADMIN && u.getDepartment() != null) {
-			Department d = u.getDepartment();
-			d.setManager(u);
-			departmentRepository.save(d);
-		}
 		return EntityMapper.toUserResponse(u);
 	}
 
@@ -96,9 +90,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse update(Long id, UpdateUserRequest req) {
 		var current = authUtils.getCurrentUser();
-		if (current == null) {
+		if (current == null)
 			throw new AccessDeniedException("Unauthorized");
-		}
 
 		User u = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -114,18 +107,14 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		if (req.getName() != null) {
+		if (req.getName() != null)
 			u.setName(req.getName());
-		}
-		if (req.getJobTitle() != null) {
+		if (req.getJobTitle() != null)
 			u.setJobTitle(req.getJobTitle());
-		}
-		if (req.getPhoneExtension() != null) {
+		if (req.getPhoneExtension() != null)
 			u.setPhoneExtension(req.getPhoneExtension());
-		}
-		if (req.getStatus() != null) {
+		if (req.getStatus() != null)
 			u.setStatus(req.getStatus());
-		}
 		if (req.getDepartmentId() != null) {
 			Department d = departmentRepository.findById(req.getDepartmentId())
 					.orElseThrow(() -> new ResourceNotFoundException("Department not found"));
@@ -139,18 +128,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<UserResponse> getAll() {
 		var current = authUtils.getCurrentUser();
-		if (current == null) {
+		if (current == null)
 			throw new AccessDeniedException("Unauthorized");
-		}
 
 		if (current.getRole().getKey() == RoleKey.ADMIN) {
 			return userRepository.findAll().stream().filter(u -> u.getStatus() != UserStatus.INACTIVE) // show active
 					.map(EntityMapper::toUserResponse).toList();
 		} else if (current.getRole().getKey() == RoleKey.SUB_ADMIN) {
 			Long deptId = current.getDepartment() != null ? current.getDepartment().getId() : null;
-			if (deptId == null) {
+			if (deptId == null)
 				return List.of();
-			}
 			return userRepository.findByDepartmentId(deptId).stream().filter(u -> u.getStatus() != UserStatus.INACTIVE)
 					.map(EntityMapper::toUserResponse).toList();
 		} else {
@@ -162,9 +149,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse getById(Long id) {
 		var current = authUtils.getCurrentUser();
-		if (current == null) {
+		if (current == null)
 			throw new AccessDeniedException("Unauthorized");
-		}
 
 		User u = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -200,9 +186,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse deactivateUser(Long id) {
 		User current = authUtils.getCurrentUser();
-		if (current == null) {
+		if (current == null)
 			throw new AccessDeniedException("Unauthorized");
-		}
 
 		User target = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -229,9 +214,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserResponse activateUser(Long id) {
 		User current = authUtils.getCurrentUser();
-		if (current == null) {
+		if (current == null)
 			throw new AccessDeniedException("Unauthorized");
-		}
 
 		User target = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 

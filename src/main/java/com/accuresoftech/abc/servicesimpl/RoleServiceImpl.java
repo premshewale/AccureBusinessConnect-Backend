@@ -1,9 +1,5 @@
 package com.accuresoftech.abc.servicesimpl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.accuresoftech.abc.dto.response.RoleResponse;
 import com.accuresoftech.abc.entity.auth.Role;
 import com.accuresoftech.abc.enums.RoleKey;
@@ -11,8 +7,10 @@ import com.accuresoftech.abc.exception.ResourceNotFoundException;
 import com.accuresoftech.abc.repository.RoleRepository;
 import com.accuresoftech.abc.services.RoleService;
 import com.accuresoftech.abc.utils.EntityMapper;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
