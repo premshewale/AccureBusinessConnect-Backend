@@ -37,17 +37,30 @@ public class SecurityConfig {
 
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
+
 		CorsConfiguration cfg = new CorsConfiguration();
 
-		cfg.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:3000",
-				"https://frontend.abc.techsofast.com", // your production frontend (set when live)
-				"https://backend.abc.techsofast.com" // allow self-origin for tools like Swagger
-		));
+		// ✅ Allowed Frontend Origins
+		cfg.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:3000",
+				"https://frontend.abc.techsofast.com"));
 
+		// ✅ HTTP methods allowed
 		cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin"));
+
+		// ✅ Headers frontend is allowed to send
+		cfg.setAllowedHeaders(
+				List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With", "x-user-role", // frontend
+																												// UI
+																												// usage
+						"x-user-id", "x-department-id"));
+
+		// ✅ Headers frontend can read
 		cfg.setExposedHeaders(List.of("Authorization"));
+
+		// ✅ Needed for JWT, cookies, auth headers
 		cfg.setAllowCredentials(true);
+
+		// ✅ Cache preflight for 1 hour
 		cfg.setMaxAge(3600L);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
