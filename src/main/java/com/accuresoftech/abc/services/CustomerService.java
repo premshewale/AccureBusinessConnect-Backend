@@ -17,8 +17,11 @@ public interface CustomerService {
 
 	CustomerResponse updateCustomer(Long id, CustomerRequest request);
 
-	void deleteCustomer(Long id);
+	//void deleteCustomer(Long id);
 	
 	CustomPageResponse<CustomerResponse> getAll(Pageable pageable, String search);
+
+	CustomerResponse deactivateCustomer(Long id);
+	CustomerResponse activateCustomer(Long id);
 
 }

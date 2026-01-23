@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.accuresoftech.abc.entity.BaseEntity;
 import com.accuresoftech.abc.enums.ContactRole;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -54,5 +55,9 @@ public class Contact extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
+
 
 }
