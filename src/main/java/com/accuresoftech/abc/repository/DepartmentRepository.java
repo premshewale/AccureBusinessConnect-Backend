@@ -8,4 +8,6 @@ import com.accuresoftech.abc.entity.auth.Department;
 
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 	Optional<Department> findByName(String name);
+
+
 }
