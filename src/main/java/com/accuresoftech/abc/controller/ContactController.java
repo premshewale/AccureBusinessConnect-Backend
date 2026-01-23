@@ -38,10 +38,27 @@ public class ContactController {
         ContactResponse updated = contactService.updateContact(id, request);
         return ResponseEntity.ok(updated);
     }
+    
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateContact(
+            @PathVariable Long customerId,
+            @PathVariable Long id) {
+        contactService.deactivateContact(id);
+        return ResponseEntity.ok().build();
+    }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activateContact(
+            @PathVariable Long customerId,
+            @PathVariable Long id) {
+        contactService.activateContact(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteContact(@PathVariable Long id) {
         contactService.deleteContact(id);
         return ResponseEntity.noContent().build(); // ✅ Proper for delete
-    }
+    }*/
 }

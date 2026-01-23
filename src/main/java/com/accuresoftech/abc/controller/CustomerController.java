@@ -57,10 +57,21 @@ public class CustomerController {
 
         return ResponseEntity.ok(customerService.updateCustomer(id, request)); 
     }
+    
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<CustomerResponse> deactivate(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.deactivateCustomer(id));
+    }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<CustomerResponse> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(customerService.activateCustomer(id));
+    }
+
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build(); 
-    }
+    }*/
 }
