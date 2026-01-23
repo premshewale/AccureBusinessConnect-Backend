@@ -10,7 +10,11 @@ public interface TicketService {
     List<TicketResponse> getAllTickets();
     TicketResponse getTicketById(Long id);
     TicketResponse updateTicket(Long id, TicketRequest request);
-    void deleteTicket(Long id);
+    //void deleteTicket(Long id);
     
     TicketResponse escalateTicket(Long id);
+    
+    void deactivateTicket(Long id);
+
+    void activateTicket(Long id);
 }

@@ -1,4 +1,4 @@
-package com.accuresoftech.abc.servicesimpl;
+/*package com.accuresoftech.abc.servicesimpl;
 
 import com.accuresoftech.abc.dto.request.TaskRequest;
 import com.accuresoftech.abc.dto.response.TaskResponse;
@@ -188,4 +188,211 @@ public class TaskServiceImpl implements TaskService {
 
         return response;
     }
+}*/
+
+package com.accuresoftech.abc.servicesimpl;
+
+import com.accuresoftech.abc.dto.request.TaskRequest;
+import com.accuresoftech.abc.dto.response.TaskResponse;
+import com.accuresoftech.abc.entity.auth.Department;
+import com.accuresoftech.abc.entity.auth.Task;
+import com.accuresoftech.abc.entity.auth.User;
+import com.accuresoftech.abc.enums.RoleKey;
+import com.accuresoftech.abc.enums.TaskStatus;
+import com.accuresoftech.abc.repository.DepartmentRepository;
+import com.accuresoftech.abc.repository.TaskRepository;
+import com.accuresoftech.abc.repository.UserRepository;
+import com.accuresoftech.abc.services.TaskService;
+import com.accuresoftech.abc.utils.AuthUtils;
+
+import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
+@Service
+public class TaskServiceImpl implements TaskService {
+
+    private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
+    private final DepartmentRepository departmentRepository;
+    private final AuthUtils authUtils;
+
+    public TaskServiceImpl(TaskRepository taskRepository,
+                           UserRepository userRepository,
+                           DepartmentRepository departmentRepository,
+                           AuthUtils authUtils) {
+        this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
+        this.departmentRepository = departmentRepository;
+        this.authUtils = authUtils;
+    }
+
+    // ----------------------------------------------------
+    // CREATE TASK
+    // ----------------------------------------------------
+    @Override
+    public TaskResponse createTask(TaskRequest request) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setStatus(
+                request.getStatus() != null ? request.getStatus() : TaskStatus.TODO
+        );
+        task.setDueDate(request.getDueDate());
+        task.setDeleted(false);
+
+        if (request.getAssigneeId() != null) {
+            User assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
+            task.setAssignee(assignee);
+        } else {
+            task.setAssignee(currentUser);
+        }
+
+        if (currentUser.getRole().getKey() == RoleKey.STAFF) {
+            task.setDepartment(currentUser.getDepartment());
+        } else if (request.getDepartmentId() != null) {
+            Department dept = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+            task.setDepartment(dept);
+        }
+
+        return convertToResponse(taskRepository.save(task));
+    }
+
+    // ----------------------------------------------------
+    // GET ALL TASKS (ROLE + SOFT DELETE)
+    // ----------------------------------------------------
+    @Override
+    public List<TaskResponse> getAllTasks() {
+        User currentUser = authUtils.getCurrentUser();
+        RoleKey role = currentUser.getRole().getKey();
+
+        List<Task> tasks = switch (role) {
+            case ADMIN -> taskRepository.findByDeletedFalse();
+            case SUB_ADMIN -> taskRepository
+                    .findByDepartmentIdAndDeletedFalse(
+                            currentUser.getDepartment().getId()
+                    );
+            case STAFF -> taskRepository
+                    .findByAssigneeIdAndDeletedFalse(currentUser.getId());
+        };
+
+        return tasks.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    // ----------------------------------------------------
+    // GET TASK BY ID
+    // ----------------------------------------------------
+    @Override
+    public TaskResponse getTaskById(Long id) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Task task = taskRepository.findById(id)
+                .filter(t -> !t.isDeleted())
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!canAccessTask(currentUser, task)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        return convertToResponse(task);
+    }
+
+    // ----------------------------------------------------
+    // UPDATE TASK
+    // ----------------------------------------------------
+    @Override
+    public TaskResponse updateTask(Long id, TaskRequest request) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Task task = taskRepository.findById(id)
+                .filter(t -> !t.isDeleted())
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (!canAccessTask(currentUser, task)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        task.setTitle(request.getTitle());
+        task.setStatus(request.getStatus());
+        task.setDueDate(request.getDueDate());
+
+        if (request.getAssigneeId() != null) {
+            User assignee = userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
+            task.setAssignee(assignee);
+        }
+
+        return convertToResponse(taskRepository.save(task));
+    }
+
+    // ----------------------------------------------------
+    // DEACTIVATE TASK (SOFT DELETE)
+    // ----------------------------------------------------
+    @Override
+    public void deactivateTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        task.setDeleted(true);
+        taskRepository.save(task);
+    }
+
+    // ----------------------------------------------------
+    // ACTIVATE TASK
+    // ----------------------------------------------------
+    @Override
+    public void activateTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        task.setDeleted(false);
+        taskRepository.save(task);
+    }
+
+    // ----------------------------------------------------
+    // ACCESS CHECK
+    // ----------------------------------------------------
+    private boolean canAccessTask(User user, Task task) {
+        RoleKey roleKey = user.getRole().getKey();
+
+        return switch (roleKey) {
+            case ADMIN -> true;
+            case SUB_ADMIN -> task.getDepartment() != null
+                    && user.getDepartment() != null
+                    && task.getDepartment().getId().equals(user.getDepartment().getId());
+            case STAFF -> task.getAssignee() != null
+                    && task.getAssignee().getId().equals(user.getId());
+        };
+    }
+
+    // ----------------------------------------------------
+    // RESPONSE MAPPER
+    // ----------------------------------------------------
+    private TaskResponse convertToResponse(Task task) {
+        TaskResponse response = new TaskResponse();
+        response.setId(task.getId());
+        response.setTitle(task.getTitle());
+        response.setStatus(task.getStatus());
+        response.setDueDate(task.getDueDate());
+
+        if (task.getAssignee() != null) {
+            response.setAssigneeId(task.getAssignee().getId());
+            response.setAssigneeName(task.getAssignee().getName());
+        }
+
+        if (task.getDepartment() != null) {
+            response.setDepartmentId(task.getDepartment().getId());
+            response.setDepartmentName(task.getDepartment().getName());
+        }
+
+        return response;
+    }
 }
+

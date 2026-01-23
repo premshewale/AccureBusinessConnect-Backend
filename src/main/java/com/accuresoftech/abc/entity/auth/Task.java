@@ -32,6 +32,10 @@ public class Task extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
     private Department department;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
+
 
 	public Task() {
 		super();

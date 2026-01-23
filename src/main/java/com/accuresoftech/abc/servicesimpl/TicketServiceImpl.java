@@ -450,7 +450,7 @@ public class TicketServiceImpl implements TicketService {
 }*/
 
 
-package com.accuresoftech.abc.servicesimpl;
+/*package com.accuresoftech.abc.servicesimpl;
 
 import com.accuresoftech.abc.dto.request.TicketRequest;
 import com.accuresoftech.abc.dto.response.TicketResponse;
@@ -664,7 +664,7 @@ public class TicketServiceImpl implements TicketService {
         }
 
         throw new RuntimeException("Invalid role");
-    }//modified logic for own staff 
+    }//modified logic for own staff */
 
    /* @Override
     public TicketResponse escalateTicket(Long id) {
@@ -713,11 +713,13 @@ public class TicketServiceImpl implements TicketService {
 
         return convertToResponse(updated);
     }//this is 1st logic*/
+    
+    
 
     // ---------------------------------------------------------------------
     // HELPER METHODS
     // ---------------------------------------------------------------------
-    private boolean canAccessTicket(User user, Ticket ticket) {
+    /*private boolean canAccessTicket(User user, Ticket ticket) {
         if (user.getRole().getKey() == RoleKey.ADMIN) return true;
         if (ticket.getDepartment() == null || user.getDepartment() == null) return false;
         return ticket.getDepartment().getId().equals(user.getDepartment().getId());
@@ -754,8 +756,261 @@ public class TicketServiceImpl implements TicketService {
 
         return response;
     }
-}
+}this is direct delete no activation deactivation*/
 
+
+package com.accuresoftech.abc.servicesimpl;
+
+import com.accuresoftech.abc.dto.request.TicketRequest;
+import com.accuresoftech.abc.dto.response.TicketResponse;
+import com.accuresoftech.abc.entity.auth.*;
+import com.accuresoftech.abc.enums.RoleKey;
+import com.accuresoftech.abc.enums.TicketPriority;
+import com.accuresoftech.abc.enums.TicketStatus;
+import com.accuresoftech.abc.repository.*;
+import com.accuresoftech.abc.services.TicketService;
+import com.accuresoftech.abc.utils.AuthUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
+@Service
+public class TicketServiceImpl implements TicketService {
+
+    private final TicketRepository ticketRepository;
+    private final CustomerRepository customerRepository;
+    private final ContactRepository contactRepository;
+    private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
+    private final AuthUtils authUtils;
+
+    public TicketServiceImpl(
+            TicketRepository ticketRepository,
+            CustomerRepository customerRepository,
+            ContactRepository contactRepository,
+            DepartmentRepository departmentRepository,
+            UserRepository userRepository,
+            AuthUtils authUtils) {
+        this.ticketRepository = ticketRepository;
+        this.customerRepository = customerRepository;
+        this.contactRepository = contactRepository;
+        this.departmentRepository = departmentRepository;
+        this.userRepository = userRepository;
+        this.authUtils = authUtils;
+    }
+
+    // --------------------------------------------------
+    // CREATE TICKET
+    // --------------------------------------------------
+    @Override
+    public TicketResponse createTicket(TicketRequest request) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Customer customer = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        Contact contact = contactRepository.findById(request.getContactId())
+                .orElseThrow(() -> new RuntimeException("Contact not found"));
+
+        Ticket ticket = new Ticket();
+        ticket.setSubject(request.getSubject());
+        ticket.setDescription(request.getDescription());
+        ticket.setCustomer(customer);
+        ticket.setContact(contact);
+        ticket.setPriority(
+                request.getPriority() != null ? request.getPriority() : TicketPriority.MEDIUM
+        );
+        ticket.setStatus(
+                request.getStatus() != null ? request.getStatus() : TicketStatus.OPEN
+        );
+        ticket.setDeleted(false);
+
+        if (request.getDepartmentId() != null) {
+            Department dept = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new RuntimeException("Department not found"));
+            ticket.setDepartment(dept);
+        } else {
+            ticket.setDepartment(currentUser.getDepartment());
+        }
+
+        return convertToResponse(ticketRepository.save(ticket));
+    }
+
+    // --------------------------------------------------
+    // GET ALL TICKETS (ROLE + SOFT DELETE)
+    // --------------------------------------------------
+    @Override
+    public List<TicketResponse> getAllTickets() {
+        User currentUser = authUtils.getCurrentUser();
+        RoleKey role = currentUser.getRole().getKey();
+
+        List<Ticket> tickets = switch (role) {
+            case ADMIN -> ticketRepository.findByDeletedFalse();
+            case SUB_ADMIN, STAFF -> {
+                if (currentUser.getDepartment() == null) yield List.of();
+                yield ticketRepository.findByDepartmentIdAndDeletedFalse(
+                        currentUser.getDepartment().getId()
+                );
+            }
+        };
+
+        return tickets.stream()
+                .map(this::convertToResponse)
+                .toList();
+    }
+
+    // --------------------------------------------------
+    // GET TICKET BY ID
+    // --------------------------------------------------
+    @Override
+    public TicketResponse getTicketById(Long id) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Ticket ticket = ticketRepository.findById(id)
+                .filter(t -> !t.isDeleted())
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        if (!canAccessTicket(currentUser, ticket)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        return convertToResponse(ticket);
+    }
+
+    // --------------------------------------------------
+    // UPDATE TICKET
+    // --------------------------------------------------
+    @Override
+    public TicketResponse updateTicket(Long id, TicketRequest request) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Ticket ticket = ticketRepository.findById(id)
+                .filter(t -> !t.isDeleted())
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        if (!canAccessTicket(currentUser, ticket)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        ticket.setSubject(request.getSubject());
+        ticket.setDescription(request.getDescription());
+        ticket.setPriority(request.getPriority());
+        ticket.setStatus(request.getStatus());
+
+        return convertToResponse(ticketRepository.save(ticket));
+    }
+
+    // --------------------------------------------------
+    // DEACTIVATE (SOFT DELETE)
+    // --------------------------------------------------
+    @Override
+    public void deactivateTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setDeleted(true);
+        ticketRepository.save(ticket);
+    }
+
+    // --------------------------------------------------
+    // ACTIVATE
+    // --------------------------------------------------
+    @Override
+    public void activateTicket(Long id) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        ticket.setDeleted(false);
+        ticketRepository.save(ticket);
+    }
+
+    // --------------------------------------------------
+    // ESCALATION (UNCHANGED)
+    // --------------------------------------------------
+    @Override
+    public TicketResponse escalateTicket(Long id) {
+        User currentUser = authUtils.getCurrentUser();
+
+        Ticket ticket = ticketRepository.findById(id)
+                .filter(t -> !t.isDeleted())
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        RoleKey role = currentUser.getRole().getKey();
+
+        if (ticket.getStatus() == TicketStatus.CLOSED || ticket.getStatus() == TicketStatus.RESOLVED) {
+            throw new RuntimeException("Cannot escalate closed/resolved ticket");
+        }
+
+        if (role == RoleKey.STAFF) {
+            if (ticket.getAssignedTo() == null ||
+                    !ticket.getAssignedTo().getId().equals(currentUser.getId())) {
+                throw new RuntimeException("You are not allowed to escalate this ticket");
+            }
+
+            User subAdmin = userRepository.findFirstByRole_Key(RoleKey.SUB_ADMIN)
+                    .orElseThrow(() -> new RuntimeException("SubAdmin not found"));
+
+            ticket.setAssignedTo(subAdmin);
+            ticket.setStatus(TicketStatus.IN_PROGRESS);
+            return convertToResponse(ticketRepository.save(ticket));
+        }
+
+        if (role == RoleKey.SUB_ADMIN) {
+            User admin = userRepository.findFirstByRole_Key(RoleKey.ADMIN)
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+
+            ticket.setAssignedTo(admin);
+            ticket.setStatus(TicketStatus.IN_PROGRESS);
+            return convertToResponse(ticketRepository.save(ticket));
+        }
+
+        throw new RuntimeException("Admin cannot escalate further");
+    }
+
+    // --------------------------------------------------
+    // ACCESS CHECK
+    // --------------------------------------------------
+    private boolean canAccessTicket(User user, Ticket ticket) {
+        if (user.getRole().getKey() == RoleKey.ADMIN) return true;
+        if (ticket.getDepartment() == null || user.getDepartment() == null) return false;
+        return ticket.getDepartment().getId().equals(user.getDepartment().getId());
+    }
+
+    // --------------------------------------------------
+    // RESPONSE MAPPER
+    // --------------------------------------------------
+    private TicketResponse convertToResponse(Ticket ticket) {
+        TicketResponse r = new TicketResponse();
+        r.setId(ticket.getId());
+        r.setSubject(ticket.getSubject());
+        r.setDescription(ticket.getDescription());
+        r.setPriority(ticket.getPriority().name());
+        r.setStatus(ticket.getStatus().name());
+
+        if (ticket.getCustomer() != null) {
+            r.setCustomerId(ticket.getCustomer().getId());
+            r.setCustomerName(ticket.getCustomer().getName());
+        }
+        if (ticket.getContact() != null) {
+            r.setContactId(ticket.getContact().getId());
+            r.setContactName(
+                    ticket.getContact().getFirstName() + " " + ticket.getContact().getLastName()
+            );
+        }
+        if (ticket.getDepartment() != null) {
+            r.setDepartmentId(ticket.getDepartment().getId());
+            r.setDepartmentName(ticket.getDepartment().getName());
+        }
+        if (ticket.getAssignedTo() != null) {
+            r.setAssignedTo(ticket.getAssignedTo().getName());
+            r.setEscalatedTo(ticket.getAssignedTo().getRole().getKey().name());
+        }
+        return r;
+    }
+}
 
 
 

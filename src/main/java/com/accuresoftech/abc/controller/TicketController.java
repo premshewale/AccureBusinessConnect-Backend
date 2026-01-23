@@ -49,11 +49,25 @@ public class TicketController {
     }
 
     // 🟥 Delete Ticket
-    @DeleteMapping("/{id}")
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTicket(@PathVariable Long id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.ok("Ticket deleted successfully");
+    }*/
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateTicket(@PathVariable Long id) {
+        ticketService.deactivateTicket(id);
+        return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activateTicket(@PathVariable Long id) {
+        ticketService.activateTicket(id);
+        return ResponseEntity.ok().build();
+    }
+
+    
     
     //escalate
    /* @PostMapping("/{id}/escalate")

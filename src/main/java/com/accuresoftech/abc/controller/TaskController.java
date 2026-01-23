@@ -37,10 +37,22 @@ public class TaskController {
     public ResponseEntity<TaskResponse> updateTask(@PathVariable Long id, @RequestBody TaskRequest request) {
         return ResponseEntity.ok(taskService.updateTask(id, request));
     }
+    
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateTask(@PathVariable Long id) {
+        taskService.deactivateTask(id);
+        return ResponseEntity.ok().build();
+    }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<Void> activateTask(@PathVariable Long id) {
+        taskService.activateTask(id);
+        return ResponseEntity.ok().build();
+    }
+
+    /*@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 }

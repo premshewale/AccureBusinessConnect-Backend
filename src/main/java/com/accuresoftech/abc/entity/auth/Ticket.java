@@ -45,6 +45,10 @@ public class Ticket extends BaseEntity  {
     @ManyToOne
     @JoinColumn(name = "assigned_to_id")
     private User assignedTo;
+    
+    @Column(nullable = false)
+    private boolean deleted = false;
+
 
    
 	public Ticket() {

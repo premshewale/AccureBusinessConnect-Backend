@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByDepartmentId(Long departmentId);
+    
+    List<Ticket> findByDepartmentIdAndDeletedFalse(Long departmentId);
+
+    List<Ticket> findByDeletedFalse();
 }
