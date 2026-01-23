@@ -31,10 +31,10 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>
     Page<Customer> searchGlobal(@Param("search") String search, Pageable pageable);
     
    
-    long count(); // total customers
+    long count(); // total 
 
     // Count by department
-    long countByDepartment_Id(Long departmentId);
+    long countByDepartmentId(Long departmentId);
 
     // Count by assigned user
     long countByAssignedUser_Id(Long userId);

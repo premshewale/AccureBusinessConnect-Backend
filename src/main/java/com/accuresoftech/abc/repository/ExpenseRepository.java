@@ -20,5 +20,9 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
 	// List<Expense> findByDepartmentIdAndDateBetween(Long departmentId, LocalDate start, LocalDate end);
 	 List<Expense> findByDepartmentIdAndDateBetweenAndDeletedFalse(Long departmentId, LocalDate start, LocalDate end);
-	
+	 
+	  long count(); // total 
+
+	  long countByDepartmentId(Long departmentId);
+
 }

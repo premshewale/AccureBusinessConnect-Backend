@@ -26,7 +26,7 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
 	
 	long count(); // total leads
 
-    long countByDepartment_Id(Long departmentId);
+	long countByDepartmentId(Long departmentId);
 
     long countByOwner_Id(Long ownerId);
     

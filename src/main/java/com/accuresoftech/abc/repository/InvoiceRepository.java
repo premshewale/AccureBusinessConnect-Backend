@@ -22,9 +22,11 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     
     
     
-    long count(); // total invoices
-
-    long countByDepartment_Id(Long departmentId);
+	    long count(); // total invoices
+	
+	    long countByDepartmentId(Long departmentId);
 
     long countByCreatedBy_Id(Long userId);
+  
+
 }
