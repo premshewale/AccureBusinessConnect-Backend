@@ -3,6 +3,7 @@ package com.accuresoftech.abc.entity.auth;
 import com.accuresoftech.abc.entity.BaseEntity;
 import com.accuresoftech.abc.enums.LeadSource;
 import com.accuresoftech.abc.enums.LeadStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +29,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({
+    "hibernateLazyInitializer",
+    "handler",
+    "owner",
+    "assignedTo",
+    "customer",
+    "department"
+})
 public class Lead extends BaseEntity {
 
     @Id

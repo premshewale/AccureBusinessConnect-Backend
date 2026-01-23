@@ -7,6 +7,7 @@ import com.accuresoftech.abc.entity.BaseEntity;
 import com.accuresoftech.abc.enums.CustomerStatus;
 import com.accuresoftech.abc.enums.CustomerType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -34,6 +35,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({
+    "hibernateLazyInitializer",
+    "handler",
+    "owner",
+    "assignedTo",
+    "customer",
+    "department"
+})
 public class Customer extends BaseEntity {
 
     @Id
