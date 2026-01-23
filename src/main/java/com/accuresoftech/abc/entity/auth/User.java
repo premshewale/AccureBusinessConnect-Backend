@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.accuresoftech.abc.entity.BaseEntity;
 import com.accuresoftech.abc.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,6 +30,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({
+    "passwordHash",
+    "role",
+    "department",
+    "lastLogin",
+    "profilePicture",
+    "createdAt",
+    "updatedAt",
+    "deleted",
+    "hibernateLazyInitializer",
+    "handler"
+})
 public class User extends BaseEntity {
 
 	@Id

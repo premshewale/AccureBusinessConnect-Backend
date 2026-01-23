@@ -36,8 +36,30 @@ public class CustomerServiceImpl implements CustomerService {
 	private User getCurrentUser() {
 		return authUtils.getCurrentUser();
 	}
+	
+	
+	
 
 	private boolean canAccessCustomer(Customer c, User u) {
+
+	    // ADMIN → full access
+	    if (u.getRole().getKey() == RoleKey.ADMIN) {
+	        return true;
+	    }
+
+	    // SUB_ADMIN → same department
+	    if (u.getRole().getKey() == RoleKey.SUB_ADMIN) {
+	        return c.getDepartment() != null
+	                && u.getDepartment() != null
+	                && c.getDepartment().getId().equals(u.getDepartment().getId());
+	    }
+
+	    // STAFF → only if assigned
+	    return c.getAssignedUser() != null
+	            && c.getAssignedUser().getId().equals(u.getId());
+	}
+
+	/*private boolean canAccessCustomer(Customer c, User u) {
 		if (u.getRole().getKey() == RoleKey.ADMIN) {
 			return true;
 		}
@@ -45,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService {
 			return c.getDepartment().getId().equals(u.getDepartment().getId());
 		}
 		return c.getAssignedUser().getId().equals(u.getId());
-	}
+	}*/
 
 	@Override
 	public CustomerResponse createCustomer(CustomerRequest request) {
@@ -164,7 +186,47 @@ public class CustomerServiceImpl implements CustomerService {
 		return toResponse(updated);
 	}
 
+	
+	
+	
 	@Override
+	public CustomerResponse deactivateCustomer(Long id) {
+	    User currentUser = getCurrentUser();
+
+	    Customer customer = customerRepository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
+
+	    if (!canAccessCustomer(customer, currentUser)) {
+	        throw new AccessDeniedException("Access Denied");
+	    }
+
+	    customer.setStatus(CustomerStatus.INACTIVE);
+	    customerRepository.save(customer);
+	    return toResponse(customer);
+	}
+
+	@Override
+	public CustomerResponse activateCustomer(Long id) {
+	    User currentUser = getCurrentUser();
+
+	    Customer customer = customerRepository.findById(id)
+	            .orElseThrow(() -> new ResourceNotFoundException("Customer Not Found"));
+
+	    if (!canAccessCustomer(customer, currentUser)) {
+	        throw new AccessDeniedException("Access Denied");
+	    }
+
+	    customer.setDeleted(false);
+	    customer.setStatus(CustomerStatus.ACTIVE);
+	    customerRepository.save(customer);
+	    return toResponse(customer);
+	}
+
+	
+	
+	
+	
+	/*@Override
 	public void deleteCustomer(Long id) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -181,7 +243,7 @@ public class CustomerServiceImpl implements CustomerService {
 		// D: Soft delete instead of hard delete
 		customer.setDeleted(true);
 		customerRepository.save(customer);
-	}
+	}*/
 
 	private CustomerResponse toResponse(Customer c) {
 		return CustomerResponse.builder().id(c.getId()).name(c.getName()).email(c.getEmail()).phone(c.getPhone())

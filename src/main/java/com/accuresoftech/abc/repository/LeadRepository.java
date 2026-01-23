@@ -1,5 +1,6 @@
 package com.accuresoftech.abc.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,8 +26,17 @@ public interface LeadRepository extends JpaRepository<Lead, Long> {
 	
 	long count(); // total leads
 
-    long countByDepartment_Id(Long departmentId);
+	long countByDepartmentId(Long departmentId);
 
     long countByOwner_Id(Long ownerId);
+    
+    @Query("""
+    	    SELECT l FROM Lead l
+    	    WHERE l.deleted = false
+    	""")
+        List<Lead> findConvertedLeads(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+        );
 
 }

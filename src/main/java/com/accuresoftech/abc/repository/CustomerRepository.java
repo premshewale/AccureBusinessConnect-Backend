@@ -1,5 +1,8 @@
 package com.accuresoftech.abc.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,12 +31,21 @@ public interface CustomerRepository extends JpaRepository<Customer, Long>
     Page<Customer> searchGlobal(@Param("search") String search, Pageable pageable);
     
    
-    long count(); // total customers
+    long count(); // total 
 
     // Count by department
-    long countByDepartment_Id(Long departmentId);
+    long countByDepartmentId(Long departmentId);
 
     // Count by assigned user
     long countByAssignedUser_Id(Long userId);
     
+    @Query("""
+            SELECT c FROM Customer c
+            WHERE (:from IS NULL OR c.createdAt >= :from)
+            AND (:to IS NULL OR c.createdAt <= :to)
+        """)
+        List<Customer> findCustomersForGrowthReport(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to
+        );
 }
