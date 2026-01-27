@@ -16,7 +16,11 @@ public interface LeadService
 
 	LeadResponse updateLead(Long id, LeadRequest request);
 
-	void deleteLead(Long id);
+	// void deleteLead(Long id);
+	
+	LeadResponse deactivateLead(Long id);
+	LeadResponse activateLead(Long id);
+
 
 	LeadResponse convertLeadToCustomer(LeadConversionRequest request);
 

@@ -66,9 +66,17 @@ public class LeadController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLead(@PathVariable Long id) {
-        leadService.deleteLead(id);
-        return ResponseEntity.noContent().build();
+   
+    @PutMapping("/{id}/deactivate")
+    public ResponseEntity<LeadResponse> deactivate(@PathVariable Long id) {
+        return ResponseEntity.ok(leadService.deactivateLead(id));
     }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<LeadResponse> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(leadService.activateLead(id));
+    }
+
+    
+    
 }
