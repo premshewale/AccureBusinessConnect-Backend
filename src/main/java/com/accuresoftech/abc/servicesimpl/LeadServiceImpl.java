@@ -66,26 +66,35 @@ public class LeadServiceImpl implements LeadService {
 
 	@Override
 	public List<LeadResponse> getAllLeads() {
-		User currentUser = getCurrentUser();
-		String role = currentUser.getRole().getKey().name();
+	    User currentUser = getCurrentUser();
+	    String role = currentUser.getRole().getKey().name();
 
-		List<Lead> leads;
+	    List<Lead> leads;
 
-		switch (role) {
-		case "ADMIN":
-			leads = leadRepository.findAll();
-			break;
-		case "SUB_ADMIN":
-			leads = leadRepository.findByDepartmentId(currentUser.getDepartment().getId());
-			break;
-		case "STAFF":
-			leads = leadRepository.findByOwnerId(currentUser.getId());
-			break;
-		default:
-			leads = List.of();
-		}
+	    switch (role) {
+	        case "ADMIN":
+	            leads = leadRepository.findAll();
+	            break;
 
-		return leads.stream().map(this::toLeadResponse).toList();
+	        case "SUB_ADMIN":
+	            leads = leadRepository.findByDepartmentId(
+	                    currentUser.getDepartment().getId());
+	            break;
+
+	        case "STAFF":
+	            leads = leadRepository.findByOwnerId(
+	                    currentUser.getId());
+	            break;
+
+	        default:
+	            leads = List.of();
+	    }
+
+	    //  IMPORTANT: inactive (LOST) leads filter
+	    return leads.stream()
+	            .filter(l -> l.getStatus() != LeadStatus.LOST)
+	            .map(this::toLeadResponse)
+	            .toList();
 	}
 
 	@Override
@@ -252,10 +261,10 @@ public class LeadServiceImpl implements LeadService {
 		lead.setStatus(newStatus);
 		Lead updated = leadRepository.save(lead);
 
-		// 🔹 Log status update
+		//  Log status update
 		logActivity(lead, "STATUS_UPDATE", currentStatus.name(), newStatus.name(), "Lead status updated");
 
-		// 🧩 NEW: Auto-convert to Customer when lead becomes WON
+		//  NEW: Auto-convert to Customer when lead becomes WON
 		if (newStatus == LeadStatus.WON && lead.getCustomer() == null) {
 			Customer customer = Customer.builder().name(lead.getName()).email(lead.getEmail()).phone(lead.getPhone())
 					.industry("Auto").address("Auto-generated from Lead").website("N/A").type(CustomerType.REGULAR)
@@ -273,18 +282,6 @@ public class LeadServiceImpl implements LeadService {
 		return toLeadResponse(updated);
 	}
 
-	@Override
-	public void deleteLead(Long id) {
-		Lead lead = leadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
-
-		User currentUser = getCurrentUser();
-		if (!canAccessLead(lead, currentUser)) {
-			throw new RuntimeException("Access denied to this lead");
-		}
-
-		lead.setDeleted(true);
-		leadRepository.save(lead);
-	}
 
 	private void logActivity(Lead lead, String action, String oldStatus, String newStatus, String remarks) {
 		User currentUser = getCurrentUser();
@@ -303,4 +300,46 @@ public class LeadServiceImpl implements LeadService {
 				.customerId(lead.getCustomer() != null ? lead.getCustomer().getId() : null)
 				.createdAt(lead.getCreatedAt()).build();
 	}
+
+		@Override
+		public LeadResponse deactivateLead(Long id) {
+		    Lead lead = leadRepository.findById(id)
+		            .orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
+	
+		    User currentUser = getCurrentUser();
+		    if (!canAccessLead(lead, currentUser)) {
+		        throw new RuntimeException("Access denied");
+		    }
+	
+		    if (lead.getStatus() == LeadStatus.LOST) {
+		        throw new RuntimeException("Lead already inactive");
+		    }
+	
+		    lead.setStatus(LeadStatus.LOST);
+		    leadRepository.save(lead);
+	
+		    return toLeadResponse(lead);
+		}
+
+
+		@Override
+		public LeadResponse activateLead(Long id) {
+		    Lead lead = leadRepository.findById(id)
+		            .orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
+
+		    User currentUser = getCurrentUser();
+		    if (!canAccessLead(lead, currentUser)) {
+		        throw new RuntimeException("Access denied");
+		    }
+
+		    if (lead.getStatus() != LeadStatus.LOST) {
+		        throw new RuntimeException("Lead already active");
+		    }
+
+		    lead.setStatus(LeadStatus.NEW);
+		    leadRepository.save(lead);
+
+		    return toLeadResponse(lead);
+		}
+
 }
