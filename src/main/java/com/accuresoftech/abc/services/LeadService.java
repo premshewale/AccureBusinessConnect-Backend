@@ -24,6 +24,6 @@ public interface LeadService
 
 	LeadResponse convertLeadToCustomer(LeadConversionRequest request);
 
-	// NEW
+
 	LeadResponse updateLeadStatus(Long id, String status);
 }

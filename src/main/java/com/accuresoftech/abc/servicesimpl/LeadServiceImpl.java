@@ -195,41 +195,61 @@ public class LeadServiceImpl implements LeadService {
 		return toLeadResponse(updatedLead);
 	}
 
-	@Override
 	@Transactional
 	public LeadResponse convertLeadToCustomer(LeadConversionRequest request) {
-		Lead lead = leadRepository.findById(request.getLeadId())
-				.orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
 
-		User currentUser = getCurrentUser();
-		if (!canAccessLead(lead, currentUser)) {
-			throw new RuntimeException("Access denied to this lead");
-		}
+	    Lead lead = leadRepository.findById(request.getLeadId())
+	            .orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
 
-		if (lead.getStatus() != LeadStatus.QUALIFIED && lead.getStatus() != LeadStatus.WON) {
-			throw new RuntimeException("Only QUALIFIED or WON leads can be converted");
-		}
+	    User currentUser = getCurrentUser();
+	    if (!canAccessLead(lead, currentUser)) {
+	        throw new RuntimeException("Access denied");
+	    }
 
-		Customer customer = Customer.builder().name(lead.getName()).email(lead.getEmail()).phone(lead.getPhone())
-				.industry(request.getIndustry()).address(request.getAddress()).website(request.getWebsite())
-				.type(CustomerType.valueOf(request.getCustomerType())).status(CustomerStatus.ACTIVE)
-				.assignedUser(lead.getOwner()).department(lead.getDepartment()).contactPersonCount(1)
-				.tags("Converted from Lead").build();
+	    //  already converted check
+	    if (lead.getCustomer() != null) {
+	        throw new RuntimeException("Lead already converted to customer");
+	    }
 
-		Customer savedCustomer = customerRepository.save(customer);
+	    LeadStatus oldStatus = lead.getStatus();
 
-		lead.setStatus(LeadStatus.WON);
-		lead.setCustomer(savedCustomer);
-		leadRepository.save(lead);
+	    //  AUTO status handling
+	    if (lead.getStatus() == LeadStatus.NEW || lead.getStatus() == LeadStatus.CONTACTED) {
+	        lead.setStatus(LeadStatus.QUALIFIED);
+	    }
 
-		logActivity(lead, "CONVERT_TO_CUSTOMER", lead.getStatus().name(), LeadStatus.WON.name(),
-				"Lead converted to customer");
+	    //  Create Customer
+	    Customer customer = Customer.builder()
+	            .name(lead.getName())
+	            .email(lead.getEmail())
+	            .phone(lead.getPhone())
+	            .industry(request.getIndustry())
+	            .address(request.getAddress())
+	            .website(request.getWebsite())
+	            .type(CustomerType.valueOf(request.getCustomerType()))
+	            .status(CustomerStatus.ACTIVE)
+	            .assignedUser(lead.getOwner())
+	            .department(lead.getDepartment())
+	            .tags("Converted from Lead")
+	            .build();
 
-		LeadResponse response = toLeadResponse(lead);
-		response.setCustomerId(savedCustomer.getId());
-		return response;
+	    Customer savedCustomer = customerRepository.save(customer);
+
+	    //  FINAL STATUS
+	    lead.setStatus(LeadStatus.WON);
+	    lead.setCustomer(savedCustomer);
+	    leadRepository.save(lead);
+
+	    logActivity(
+	        lead,
+	        "CONVERT_TO_CUSTOMER",
+	        oldStatus.name(),
+	        LeadStatus.WON.name(),
+	        "Lead converted via single-click convert"
+	    );
+
+	    return toLeadResponse(lead);
 	}
-
 	@Override
 	public LeadResponse updateLeadStatus(Long id, String status) {
 		Lead lead = leadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Lead not found"));
