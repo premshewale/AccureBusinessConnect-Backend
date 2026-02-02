@@ -35,14 +35,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({
-    "hibernateLazyInitializer",
-    "handler",
-    "owner",
-    "assignedTo",
-    "customer",
-    "department"
-})
 public class Customer extends BaseEntity {
 
     @Id
