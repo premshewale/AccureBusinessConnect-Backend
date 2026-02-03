@@ -30,18 +30,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonIgnoreProperties({
-    "passwordHash",
-    "role",
-    "department",
-    "lastLogin",
-    "profilePicture",
-    "createdAt",
-    "updatedAt",
-    "deleted",
-    "hibernateLazyInitializer",
-    "handler"
-})
 public class User extends BaseEntity {
 
 	@Id
