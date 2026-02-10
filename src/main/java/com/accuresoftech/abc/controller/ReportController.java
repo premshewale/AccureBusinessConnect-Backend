@@ -1,11 +1,9 @@
 package com.accuresoftech.abc.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.accuresoftech.abc.dto.response.CustomPageResponse;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.dto.response.LeadResponse;
-import com.accuresoftech.abc.entity.auth.Customer;
-import com.accuresoftech.abc.entity.auth.Lead;
+import com.accuresoftech.abc.dto.response.ProposalResponse;
 import com.accuresoftech.abc.services.CustomerService;
 import com.accuresoftech.abc.services.LeadService;
+import com.accuresoftech.abc.services.ProposalService;
 import com.accuresoftech.abc.services.ReportService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,11 +26,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final ReportService reportService;
     
     private final LeadService leadService;
     
     private final CustomerService customerService;
+    
+	private final ProposalService proposalService;
+
 
     
     @GetMapping("/leads")
@@ -49,6 +49,11 @@ public class ReportController {
         Pageable pageable = PageRequest.of(page, size);
         return customerService.getAll(pageable, search);
     }
+    
+    @GetMapping("/proposals")
+	public ResponseEntity<List<ProposalResponse>> getAllProposals() {
+		return ResponseEntity.ok(proposalService.getAllProposals());
+	}
     
 }
 
