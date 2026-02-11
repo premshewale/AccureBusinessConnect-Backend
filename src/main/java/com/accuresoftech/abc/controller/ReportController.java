@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.accuresoftech.abc.dto.response.CustomPageResponse;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.dto.response.LeadResponse;
+<<<<<<< HEAD
 import com.accuresoftech.abc.dto.response.ProposalResponse;
+=======
+>>>>>>> 7a6374bf518042b48b39ab21e46d9e95ad0b70d1
 import com.accuresoftech.abc.services.CustomerService;
 import com.accuresoftech.abc.services.LeadService;
 import com.accuresoftech.abc.services.ProposalService;
@@ -22,8 +25,9 @@ import com.accuresoftech.abc.services.ReportService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/reports")
 @RequiredArgsConstructor
+@RequestMapping("/api/reports")
+
 public class ReportController {
 
     

@@ -30,6 +30,11 @@ public class ContactController {
         List<ContactResponse> contacts = contactService.getContactsByCustomer(customerId);
         return ResponseEntity.ok(contacts);
     }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ContactResponse> getContactById(@PathVariable Long id) {
+        return ResponseEntity.ok(contactService.getContactById(id));
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ContactResponse> updateContact(
