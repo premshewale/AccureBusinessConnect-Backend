@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.accuresoftech.abc.dto.response.CustomPageResponse;
 import com.accuresoftech.abc.dto.response.CustomerResponse;
 import com.accuresoftech.abc.dto.response.LeadResponse;
-import com.accuresoftech.abc.entity.auth.Customer;
-import com.accuresoftech.abc.entity.auth.Lead;
 import com.accuresoftech.abc.services.CustomerService;
 import com.accuresoftech.abc.services.LeadService;
 import com.accuresoftech.abc.services.ReportService;
@@ -24,8 +22,9 @@ import com.accuresoftech.abc.services.ReportService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/reports")
 @RequiredArgsConstructor
+@RequestMapping("/api/reports")
+
 public class ReportController {
 
     private final ReportService reportService;

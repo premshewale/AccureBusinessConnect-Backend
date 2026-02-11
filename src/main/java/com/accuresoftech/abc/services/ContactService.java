@@ -20,6 +20,8 @@ public interface ContactService
 	void deactivateContact(Long id);
 
     void activateContact(Long id);
+    
+    ContactResponse getContactById(Long id);
 	
 //	List<ContactResponse> getAllContacts();
 
