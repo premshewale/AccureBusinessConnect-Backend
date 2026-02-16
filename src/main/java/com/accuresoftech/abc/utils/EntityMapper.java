@@ -11,22 +11,25 @@ import com.accuresoftech.abc.entity.auth.User;
 public class EntityMapper
 {
 
-    public static UserResponse toUserResponse(User user)
-    {
-        if (user == null) {
-			return null;
-		}
-        return UserResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .jobTitle(user.getJobTitle())
-                .phoneExtension(user.getPhoneExtension())
-                .status(user.getStatus() != null ? user.getStatus().name() : null)
-                .roleName(user.getRole() != null ? user.getRole().getName() : null)
-                .departmentName(user.getDepartment() != null ? user.getDepartment().getName() : null)
-                .build();
-    }
+	public static UserResponse toUserResponse(User user)
+	{
+	    if (user == null) {
+	        return null;
+	    }
+
+	    return UserResponse.builder()
+	            .id(user.getId())
+	            .name(user.getName())
+	            .email(user.getEmail())
+	            .jobTitle(user.getJobTitle())
+	            .phoneExtension(user.getPhoneExtension())
+	            .status(user.getStatus() != null ? user.getStatus().name() : null)
+	            .roleName(user.getRole() != null ? user.getRole().getName() : null)
+	            .departmentId(user.getDepartment() != null ? user.getDepartment().getId() : null)   // 🔥 ADD THIS
+	            .departmentName(user.getDepartment() != null ? user.getDepartment().getName() : null)
+	            .build();
+	}
+
 
     public static DepartmentResponse toDepartmentResponse(Department d) {
         if (d == null) {

@@ -17,5 +17,6 @@ public class UserResponse {
 	private String phoneExtension;
 	private String status;
 	private String roleName;
+	private Long departmentId; 
 	private String departmentName;;
 }
