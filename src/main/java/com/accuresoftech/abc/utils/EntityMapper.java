@@ -25,7 +25,7 @@ public class EntityMapper
 	            .phoneExtension(user.getPhoneExtension())
 	            .status(user.getStatus() != null ? user.getStatus().name() : null)
 	            .roleName(user.getRole() != null ? user.getRole().getName() : null)
-	            .departmentId(user.getDepartment() != null ? user.getDepartment().getId() : null)   // 🔥 ADD THIS
+	            .departmentId(user.getDepartment() != null ? user.getDepartment().getId() : null)   
 	            .departmentName(user.getDepartment() != null ? user.getDepartment().getName() : null)
 	            .build();
 	}

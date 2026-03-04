@@ -78,8 +78,10 @@ public class SecurityConfig {
 
 		http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
-				.permitAll().requestMatchers("/api/admin/**").hasRole("ADMIN").requestMatchers("/api/manager/**")
+		http.authorizeHttpRequests(auth -> auth
+				.requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/api/public/chat").permitAll()
+				.requestMatchers("/api/admin/**").hasRole("ADMIN").requestMatchers("/api/manager/**")
+
 				.hasAnyRole("ADMIN", "SUB_ADMIN").requestMatchers("/api/staff/**")
 				.hasAnyRole("ADMIN", "SUB_ADMIN", "STAFF").anyRequest().authenticated());
 
