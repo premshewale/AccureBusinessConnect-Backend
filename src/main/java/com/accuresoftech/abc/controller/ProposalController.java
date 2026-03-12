@@ -1,6 +1,7 @@
 package com.accuresoftech.abc.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,5 +82,10 @@ public class ProposalController {
 	public ResponseEntity<Long> countByCustomer(@PathVariable Long customerId) {
 		return ResponseEntity.ok(proposalService.getProposalCountByCustomer(customerId));
 	}
+	
+	@GetMapping("/status-count")
+    public Map<String, Long> getProposalStatusCounts() {
+        return proposalService.getProposalStatusCounts();
+    }
 
 }

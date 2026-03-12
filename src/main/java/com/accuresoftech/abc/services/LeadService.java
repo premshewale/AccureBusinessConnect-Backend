@@ -5,6 +5,7 @@ import java.util.List;
 import com.accuresoftech.abc.dto.request.LeadConversionRequest;
 import com.accuresoftech.abc.dto.request.LeadRequest;
 import com.accuresoftech.abc.dto.response.LeadResponse;
+import com.razorpay.RazorpayException;
 
 public interface LeadService 
 {
@@ -26,4 +27,5 @@ public interface LeadService
 
 
 	LeadResponse updateLeadStatus(Long id, String status);
+	
 }

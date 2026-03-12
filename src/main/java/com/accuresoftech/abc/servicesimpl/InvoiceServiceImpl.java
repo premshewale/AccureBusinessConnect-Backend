@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -142,4 +144,25 @@ public class InvoiceServiceImpl implements InvoiceService {
 	            .invoiceId(payment.getInvoice().getId())   //  VERY IMPORTANT 
 	            .build();
 	}
+	
+	public Map<String, Long> getInvoiceStatusCounts() {
+
+        List<Object[]> results = invoiceRepository.countInvoicesByStatus();
+
+        Map<String, Long> response = new LinkedHashMap<>();
+
+        // Initialize all enums with 0
+        for (InvoiceStatus status : InvoiceStatus.values()) {
+            response.put(status.name(), 0L);
+        }
+
+        // Replace with actual counts
+        for (Object[] row : results) {
+            String status = row[0].toString();
+            Long count = (Long) row[1];
+            response.put(status, count);
+        }
+
+        return response;
+    }
 }

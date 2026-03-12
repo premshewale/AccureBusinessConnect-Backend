@@ -27,6 +27,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 	    long countByDepartmentId(Long departmentId);
 
     long countByCreatedBy_Id(Long userId);
+    
+    @Query("SELECT i.status, COUNT(i) FROM Invoice i GROUP BY i.status")
+    List<Object[]> countInvoicesByStatus();
   
 
 }
