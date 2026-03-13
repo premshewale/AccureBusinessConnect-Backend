@@ -1,6 +1,7 @@
 package com.accuresoftech.abc.services;
 
 import java.util.List;
+import java.util.Map;
 
 import com.accuresoftech.abc.dto.request.ProposalRequest;
 import com.accuresoftech.abc.dto.response.ProposalResponse;
@@ -25,5 +26,7 @@ public interface ProposalService {
 	List<ProposalResponse> getProposalsByDepartment(Long departmentId);
 
 	Long getProposalCountByCustomer(Long customerId);
+	
+	public Map<String, Long> getProposalStatusCounts();
 
 }

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/invoices")
@@ -48,5 +49,10 @@ public class InvoiceController {
     public ResponseEntity<Void> deleteInvoice(@PathVariable Long id) {
         invoiceService.deleteInvoice(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/status-count")
+    public Map<String, Long> getInvoiceStatusCounts() {
+        return invoiceService.getInvoiceStatusCounts();
     }
 }

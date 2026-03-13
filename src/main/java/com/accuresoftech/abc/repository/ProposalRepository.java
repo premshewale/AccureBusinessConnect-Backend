@@ -42,5 +42,8 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long>
     List<Proposal> findByStatusAndDeletedFalse(ProposalStatus status);
   //  List<Proposal> findByStatusAndDepartmentAndDeletedFalse(ProposalStatus status, Long departmentId);
     List<Proposal> findByStatusAndDepartment_IdAndDeletedFalse(ProposalStatus status, Long departmentId);
+    
+    @Query("SELECT p.status, COUNT(p) FROM Proposal p GROUP BY p.status")
+    List<Object[]> countProposalsByStatus();
 
 }

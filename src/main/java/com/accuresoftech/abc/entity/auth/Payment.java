@@ -1,13 +1,16 @@
 package com.accuresoftech.abc.entity.auth;
 
 import com.accuresoftech.abc.entity.BaseEntity;
-
+import com.accuresoftech.abc.enums.InvoiceStatus;
 import com.accuresoftech.abc.enums.PaymentMethod;
+import com.accuresoftech.abc.enums.PaymentStatus;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payments")
@@ -35,4 +38,15 @@ public class Payment extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDate paymentDate;
+    
+    @Column(unique = true)
+    private String gatewayOrderId;
+
+    private String gatewayPaymentId;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+    
+    private String currency;
 }
+

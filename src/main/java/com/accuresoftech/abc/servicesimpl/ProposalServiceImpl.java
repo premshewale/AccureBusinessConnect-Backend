@@ -1,7 +1,9 @@
 package com.accuresoftech.abc.servicesimpl;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -295,4 +297,25 @@ public class ProposalServiceImpl implements ProposalService {
 		List<Proposal> proposals = proposalRepository.findByCustomerIdAndDeletedFalse(customerId);
 		return proposals.stream().filter(p -> canAccessProposal(p, currentUser)).count();
 	}
+	
+	 public Map<String, Long> getProposalStatusCounts() {
+
+	        List<Object[]> results = proposalRepository.countProposalsByStatus();
+
+	        Map<String, Long> response = new LinkedHashMap<>();
+
+	        // Initialize all enums with 0
+	        for (ProposalStatus status : ProposalStatus.values()) {
+	            response.put(status.name(), 0L);
+	        }
+
+	        // Replace with actual counts
+	        for (Object[] row : results) {
+	            String status = row[0].toString();
+	            Long count = (Long) row[1];
+	            response.put(status, count);
+	        }
+
+	        return response;
+	    }
 }
