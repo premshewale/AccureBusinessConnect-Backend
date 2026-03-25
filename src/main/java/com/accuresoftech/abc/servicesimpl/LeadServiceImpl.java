@@ -150,7 +150,7 @@ public class LeadServiceImpl implements LeadService {
 
 		Lead lead = Lead.builder().name(request.getName()).email(request.getEmail()).phone(request.getPhone())
 				.source(request.getSource()).status(LeadStatus.NEW).owner(owner).department(department)
-				.assignedTo(assignedToUser).build();
+				.assignedTo(assignedToUser).description(request.getDescription()).build();
 
 		Lead savedLead = leadRepository.save(lead);
 
@@ -318,6 +318,7 @@ public class LeadServiceImpl implements LeadService {
 				.assignedToName(lead.getAssignedTo() != null ? lead.getAssignedTo().getName() : null)
 				.departmentName(lead.getDepartment() != null ? lead.getDepartment().getName() : null)
 				.customerId(lead.getCustomer() != null ? lead.getCustomer().getId() : null)
+				.description(lead.getDescription())
 				.createdAt(lead.getCreatedAt()).build();
 	}
 

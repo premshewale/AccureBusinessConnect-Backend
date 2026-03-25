@@ -16,5 +16,9 @@ public class OrderResponse {
 	private String orderId;
     private String currency;
     private BigDecimal amount;
+	public void setAmount(long amountInPaise) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

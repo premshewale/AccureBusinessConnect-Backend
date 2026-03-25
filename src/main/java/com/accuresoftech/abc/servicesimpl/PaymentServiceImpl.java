@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -172,10 +173,37 @@ public class PaymentServiceImpl implements PaymentService {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
 
+        // ✅ Check existing CREATED payment
+        Optional<Payment> existing =
+                paymentRepository.findByInvoiceIdAndStatus(invoiceId, PaymentStatus.CREATED);
+
+        if (existing.isPresent()) {
+
+            Payment payment = existing.get();
+
+            long amountInPaise = payment.getAmount()
+                    .multiply(new BigDecimal(100))
+                    .longValue();
+
+            OrderResponse response = new OrderResponse();
+            response.setOrderId(payment.getGatewayOrderId());
+            response.setCurrency(payment.getCurrency());
+            response.setAmount(amountInPaise);
+
+            System.out.println("Reusing existing order: " + payment.getGatewayOrderId());
+
+            return response;
+        }
+
+        // ✅ Create new order only if not exists
+        long amountInPaise = invoice.getTotalAmount()
+                .multiply(new BigDecimal(100))
+                .longValue();
+
         JSONObject options = new JSONObject();
-        options.put("amount", invoice.getTotalAmount().multiply(new BigDecimal(100)));
+        options.put("amount", amountInPaise);
         options.put("currency", "INR");
-        options.put("receipt", "txn_123456");
+        options.put("receipt", "INV_" + invoice.getId());
 
         Order order = razorpayClient.orders.create(options);
 
@@ -188,16 +216,15 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setCreatedAt(LocalDateTime.now());
         payment.setMethod(PaymentMethod.BANK_TRANSFER);
         payment.setPaymentDate(LocalDate.now());
-        
-
-        
 
         paymentRepository.save(payment);
+
+        System.out.println("New order created: " + order.get("id"));
 
         OrderResponse response = new OrderResponse();
         response.setOrderId(order.get("id").toString());
         response.setCurrency("INR");
-        response.setAmount(invoice.getTotalAmount().multiply(new BigDecimal(100)));
+        response.setAmount(amountInPaise);
 
         return response;
     }

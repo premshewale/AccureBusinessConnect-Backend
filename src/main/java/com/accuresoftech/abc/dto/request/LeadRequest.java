@@ -14,6 +14,7 @@ public class LeadRequest {
 
     private String email;
     private String phone;
+    private String description;
 
     @NotNull
     private LeadSource source;
@@ -21,4 +22,6 @@ public class LeadRequest {
     private Long ownerId;        // creator/owner assignment (manager)
     private Long assignedTo;     // staff handling the lead
     private Long departmentId;
+	
+	
 }

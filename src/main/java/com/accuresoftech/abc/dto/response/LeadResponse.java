@@ -18,6 +18,7 @@ public class LeadResponse {
     private String phone;
     private String source;
     private String status;
+    private String description;
     private String ownerName;
     private String assignedToName;   // new
     private String departmentName;

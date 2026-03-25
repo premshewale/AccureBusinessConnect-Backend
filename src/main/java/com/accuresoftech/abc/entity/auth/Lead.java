@@ -40,6 +40,7 @@ public class Lead extends BaseEntity {
 
     private String email;
     private String phone;
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private LeadSource source;
@@ -63,5 +64,7 @@ public class Lead extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
+    
+    
 
 }
